@@ -6,6 +6,10 @@ namespace GameNS {
 namespace GameMainNS {
 namespace FieldNS{
 
+class Stage;
+class Player;
+class GameSystem;
+
 
 class Main : public Child
 {
@@ -17,7 +21,12 @@ public:
 	void draw() const;
 	GameScene changeScene();
 private:
+	//éüÇÃÉVÅ[Éì
 	GameScene mNext;
+
+	Stage* mStage;
+	Player* mPlayer;
+	GameSystem* mGameSystem;
 };
 
 
