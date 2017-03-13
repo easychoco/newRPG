@@ -22,7 +22,7 @@ Player::~Player()
 
 void Player::initialize()
 {
-
+	point = new Vector2{ 0, 0 };
 }
 
 void Player::update()
@@ -33,6 +33,7 @@ void Player::update()
 void Player::draw() const
 {
 	DrawFormatString(100, 20, MyData::WHITE, "Player");
+	DrawCircle(point->x / 1000, point->y / 1000, 5, MyData::GREEN, true);
 }
 
 

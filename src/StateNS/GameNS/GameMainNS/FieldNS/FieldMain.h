@@ -6,6 +6,7 @@ namespace GameNS {
 namespace GameMainNS {
 namespace FieldNS{
 
+
 class Stage;
 class Player;
 class GameSystem;

@@ -52,20 +52,19 @@ const unsigned BLUE = GetColor(0, 0, 255);
 
 
 
-//2次元ベクトル
-template <typename T>
+//整数値2次元ベクトル
 class Vector2
 {
 public:
-	T x;
-	T y;
+	int x;
+	int y;
 
 	Vector2() :
 		Vector2(0, 0)
 	{
 
 	}
-	Vector2(T _x, T _y)
+	Vector2(int _x, int _y)
 	{
 		this->x = _x;
 		this->y = _y;
@@ -93,11 +92,11 @@ public:
 	{
 		return Vector2(x - other.x, y - other.y);
 	}
-	const Vector2 operator * (T other) const
+	const Vector2 operator * (int other) const
 	{
 		return Vector2(x * other, y * other);
 	}
-	const Vector2 operator / (T other) const
+	const Vector2 operator / (int other) const
 	{
 		return Vector2(x / other, y / other);
 	}
@@ -110,13 +109,13 @@ public:
 		return !(*this == other);
 	}
 
-	/*
-	static const Vector2<T> ZERO;
-	static const Vector2<int> LEFT;
-	static const Vector2<int> RIGHT;
-	static const Vector2<int> UP;
-	static const Vector2<int> DOWN;
-	*/
+	
+	static const Vector2 ZERO;
+	static const Vector2 LEFT;
+	static const Vector2 RIGHT;
+	static const Vector2 UP;
+	static const Vector2 DOWN;
+	
 
 };
 
