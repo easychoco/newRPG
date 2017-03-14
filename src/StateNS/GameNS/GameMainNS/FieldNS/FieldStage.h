@@ -14,7 +14,8 @@ public:
 	void initialize();
 	void update();
 	void draw() const;
-
+private:
+	int mBackImg;
 };
 
 

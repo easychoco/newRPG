@@ -22,7 +22,7 @@ Stage::~Stage()
 
 void Stage::initialize()
 {
-
+	mBackImg = LoadGraph("Data/FieldBack.png");
 }
 
 void Stage::update()
@@ -33,6 +33,7 @@ void Stage::update()
 void Stage::draw() const
 {
 	DrawFormatString(100, 0, MyData::WHITE, "Stage");
+	DrawGraph(0, 0, mBackImg, true);
 }
 
 
