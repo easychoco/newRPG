@@ -39,14 +39,14 @@ void Main::update(GameParent* _parent)
 
 	//update
 	mStage->update();
-	mPlayer->update();
+	mPlayer->update(this);
 	mGameSystem->update();
 }
 
 void Main::draw() const
 {
 	DrawFormatString(0, 40, MyData::WHITE, "FieldMain");
-	mStage->draw();
+	mStage->draw(mPlayer->getVector2());
 	mPlayer->draw();
 	mGameSystem->draw();
 
@@ -57,6 +57,10 @@ GameScene Main::changeScene()
 	return mNext;
 }
 
+bool Main::canPass(int px, int py) const
+{
+	return mStage->canPass(px, py);
+}
 
 
 

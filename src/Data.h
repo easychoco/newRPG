@@ -43,6 +43,14 @@ namespace MyData{
 const int CX = 320;
 const int CY = 240;
 
+//マップのサイズ
+//32x32pixcelだと40x30チップ
+const int MAP_WIDTH = 1280;
+const int MAP_HEIGHT = 960;
+
+//1ピクセルをどれだけ拡張するか
+const int vectorRate = 1000;
+
 //色
 const unsigned BLACK = GetColor(0, 0, 0);
 const unsigned WHITE = GetColor(255, 255, 255);

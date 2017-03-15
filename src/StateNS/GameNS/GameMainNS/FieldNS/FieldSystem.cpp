@@ -32,7 +32,7 @@ void GameSystem::update()
 
 void GameSystem::draw() const
 {
-	DrawFormatString(100, 40, MyData::WHITE, "System");
+	//DrawFormatString(100, 40, MyData::WHITE, "System");
 }
 
 
