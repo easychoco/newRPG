@@ -8,6 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	DxLib_Init();
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClearDrawScreen();
+	SetMainWindowText("RPG(âºèÃ)");
 
 	Parent* parent = new Parent();
 

@@ -18,12 +18,12 @@ GameMain::GameMain(){
 
 GameMain::~GameMain()
 {
-
+	SAFE_DELETE(mChild);
 }
 
 void GameMain::initialize()
 {
-	mChild = new FieldNS::Main();
+	mChild = new BattleNS::Main();
 }
 
 void GameMain::update(GameParent* _parent)
@@ -51,7 +51,6 @@ void GameMain::draw() const
 	DrawFormatString(0, 20, MyData::WHITE, "GameMain");
 	mChild->draw();
 }
-
 
 
 

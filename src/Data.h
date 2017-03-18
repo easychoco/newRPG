@@ -3,8 +3,15 @@
 #include "DXLib.h"
 #include <array>
 #include <cassert>
+#include <string>
+#include <vector>
+#include <queue>
 
 
+using std::array;
+using std::string;
+using std::vector;
+using std::queue;
 
 //‰~Žü—¦
 #define Pi 3.14159265358979f
