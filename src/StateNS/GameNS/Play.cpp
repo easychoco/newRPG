@@ -29,7 +29,7 @@ Child* Play::update(Parent* parent)
 	Child* next = this;
 	gameMain->update(this);
 
-	if (Input_X())
+	if (Input_C())
 	{
 		SAFE_DELETE(gameMain);
 		next = new Clear();

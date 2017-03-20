@@ -45,6 +45,11 @@ void ActionController::update()
 
 }
 
+void ActionController::draw() const
+{
+
+}
+
 void ActionController::addAction(Action* _a)
 {
 	actions.push(_a);

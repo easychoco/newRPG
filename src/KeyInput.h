@@ -3,6 +3,7 @@
 bool Input_Z();
 bool Input_X();
 bool Input_C();
+bool Input_V();
 bool Input_W();
 bool Input_A();
 bool Input_S();

@@ -35,10 +35,10 @@ void Main::initialize()
 	mTime = 0;
 
 	//メッセージ追加
+	sController->addMessage("First Message");
+	sController->addMessage("Second Message");
 	sController->addMessage("ゆうしゃはどうする？");
 	sController->addMessage("魔物が現れた！");
-	sController->addMessage("line two");
-	sController->addMessage("line one");
 
 
 	//バトルに参加するキャラクターの配列を作成
@@ -60,7 +60,7 @@ void Main::update(GameParent* _parent)
 	//背景の処理
 	stage->update();
 
-	//if (mTime % 60 == 1)newTurn();
+	if (mTime % 120 == 0)sController->addMessage("message!");
 
 	//バトルの処理(Stateパターン)
 	BattleChild* next = mChild->update(this);
@@ -84,6 +84,8 @@ void Main::draw() const
 	stage->draw();
 	mChild->draw();
 	sController->draw();
+	aController->draw();
+
 }
 
 //次の場面を返す
@@ -100,8 +102,10 @@ void Main::addAction(Action* a) { aController->addAction(a); }
 //========================================================================
 void Main::addActor()
 {
-	Actor::Status s = { 0, "me", false, 100, 10, 10, 10, 10, 5 };
+	Actor::Status s{ 0, "me", false, 100, 10, 10, 10, 10, 5 };
 	actors.push_back(new Player(s));
+	Actor::Status e{ 1, "ene", true, 100, 10, 10, 10, 10, 5 };
+	actors.push_back(new Player(e));
 
 }
 
@@ -155,7 +159,7 @@ BattleChild* Decide::update(Main* _main)
 
 void Decide::draw() const
 {
-
+	(act_que.front())->draw(20, 20);
 }
 
 

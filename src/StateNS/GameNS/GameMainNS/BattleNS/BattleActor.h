@@ -19,11 +19,11 @@ public:
 	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, speed
 	struct Status {
 		const int ID;
-		const bool isEnemy;
 		const char* name;
+		const bool isEnemy;
 		const int maxHP;
 		const int attack, defence;
-		const int mattack, mdifence;
+		const int mattack, mdefence;
 		const int speed;
 	};
 

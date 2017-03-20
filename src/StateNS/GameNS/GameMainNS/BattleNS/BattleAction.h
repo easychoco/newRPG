@@ -20,6 +20,7 @@ public:
 		ACT_NONE,
 	};
 
+	//自分，相手，行動内容
 	Action(int, int, Actions);
 	~Action();
 
@@ -42,6 +43,7 @@ public:
 	~ActionController();
 	void initialize();
 	void update();
+	void draw() const;
 	void addAction(Action* a);
 	bool processAction();
 

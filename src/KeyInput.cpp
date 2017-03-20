@@ -19,6 +19,11 @@ bool Input_C()
 	return toBoolean[CheckHitKey(KEY_INPUT_C)];
 }
 
+bool Input_V()
+{
+	return toBoolean[CheckHitKey(KEY_INPUT_V)];
+}
+
 bool Input_W()
 {
 	return toBoolean[CheckHitKey(KEY_INPUT_W)];
