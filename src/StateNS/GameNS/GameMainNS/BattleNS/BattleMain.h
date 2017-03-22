@@ -18,6 +18,8 @@ class ActionController;
 class StringController;
 class BattleChild;
 
+
+
 class Main : public Child
 {
 public:
@@ -27,9 +29,8 @@ public:
 	void update(GameParent*);
 	void draw() const;
 	GameScene changeScene();
-	void addAction(Action* a);
 
-protected:
+private:
 	Stage* stage;
 
 	ActionController* aController;
@@ -39,11 +40,24 @@ protected:
 	BattleChild* mChild;
 	int mTime;
 
-
 	//プレイヤーと敵が一緒に入っている配列
 	vector<Actor*> actors;
 
+	//プレイヤーの配列
+	vector<Actor*> players;
+
+	//敵の配列
+	vector<Actor*> enemies;
+
+	//Actorの配列を作成
 	void addActor();
+
+	//プレイヤーのステータスを描画する
+	void drawStatus(int, int, const vector<Actor*>&) const;
+
+	//バトルが終わったか判定
+	bool finBattle();
+
 
 };
 
@@ -54,8 +68,8 @@ class BattleChild
 {
 public:
 	virtual ~BattleChild() {};
-	virtual BattleChild* update(Main*) = 0;
-	virtual void draw() const = 0;
+	virtual BattleChild* update(ActionController*, StringController*, vector<Actor*>) = 0;
+	virtual void draw(ActionController*) const = 0;
 };
 
 //========================================================================
@@ -65,15 +79,21 @@ public:
 class Decide : public BattleChild
 {
 public:
-	Decide(vector<Actor*>& vec_act);
+	Decide(vector<Actor*>);
 	~Decide();
-	void initialize(vector<Actor*> vec_act);
-	BattleChild* update(Main*);
-	void draw() const;
+	void initialize(vector<Actor*>&);
+	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
+	void draw(ActionController*) const;
 private:
+	int doneNum = 0;
+
 	//行動を決めるときのキュー
 	//中身はプレイヤーと敵が行動順に入っている
 	queue<Actor*> act_que;
+
+	vector<Actor*> enemies;
+	vector<Actor*> players;
+
 };
 
 //========================================================================
@@ -86,8 +106,10 @@ public:
 	Battle();
 	~Battle();
 	void initialize();
-	BattleChild* update(Main*);
-	void draw() const;
+	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
+	void draw(ActionController*) const;
+
+
 };
 
 }

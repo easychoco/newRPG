@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 
 using std::array;
@@ -60,6 +61,7 @@ const int vectorRate = 1000;
 
 //êF
 const unsigned BLACK = GetColor(0, 0, 0);
+const unsigned GLAY = GetColor(128, 128, 128);
 const unsigned WHITE = GetColor(255, 255, 255);
 const unsigned RED = GetColor(255, 0, 0);
 const unsigned GREEN = GetColor(0, 255, 0);

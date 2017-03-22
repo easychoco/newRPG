@@ -7,6 +7,9 @@ namespace GameNS {
 namespace GameMainNS {
 namespace BattleNS {
 
+class StringController;
+class Actor;
+
 class Action
 {
 public:
@@ -42,10 +45,12 @@ public:
 	ActionController();
 	~ActionController();
 	void initialize();
-	void update();
+	bool update(StringController*, vector<Actor*>);
 	void draw() const;
 	void addAction(Action* a);
 	bool processAction();
+
+	int mTime;
 
 	//çsìÆÉLÉÖÅ[
 	queue<Action*> actions;

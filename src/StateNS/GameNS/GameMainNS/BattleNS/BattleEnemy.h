@@ -1,4 +1,6 @@
+#pragma once
 
+#include "BattleActor.h"
 #include "..\..\..\..\Data.h"
 
 namespace StateNS {
@@ -6,14 +8,14 @@ namespace GameNS {
 namespace GameMainNS {
 namespace BattleNS {
 
-
-class Enemy
+class Enemy : public Actor
 {
 public:
-	Enemy();
+	Enemy(Status);
 	~Enemy();
-	void update();
-	void draw() const;
+	void initialize();
+	bool attack(StringController*, const vector<Actor*>& _players);
+	void draw(vector<Actor*>) const;
 
 private:
 

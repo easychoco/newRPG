@@ -8,16 +8,14 @@ namespace GameNS {
 namespace GameMainNS {
 namespace BattleNS {
 
-class SelectChild;
-
 class Player : public Actor
 {
 public:
-	Player(Status _s);
+	Player(Status);
 	~Player();
 	void initialize();
-	bool attack();
-	void draw(int, int) const;
+	bool attack(StringController*, const vector<Actor*>& _enemies);
+	void draw(vector<Actor*>) const;
 
 
 	bool mPrePush;
@@ -34,14 +32,7 @@ private:
 	int mImg;
 
 	int mCursorPos;
-	const array<Action::Actions, 4 > toAction
-	{
-		Action::Actions::ACT_ATTACK,
-		Action::Actions::ACT_MAGIC,
-		Action::Actions::ACT_SPECIAL,
-		Action::Actions::ACT_SPECIAL,
-	};
-
+	bool mFirstCome;
 
 };
 
