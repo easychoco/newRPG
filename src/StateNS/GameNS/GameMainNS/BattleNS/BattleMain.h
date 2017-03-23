@@ -2,10 +2,6 @@
 #include "..\GameMainChild.h"
 #include "..\..\..\..\Data.h"
 
-#include <string>
-#include <vector>
-
-
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
@@ -26,9 +22,8 @@ public:
 	Main();
 	~Main();
 	void initialize();
-	void update(GameParent*);
+	Child* update(GameParent*);
 	void draw() const;
-	GameScene changeScene();
 
 private:
 	Stage* stage;
@@ -56,9 +51,9 @@ private:
 	void drawStatus(int, int, const vector<Actor*>&) const;
 
 	//ƒoƒgƒ‹‚ªI‚í‚Á‚½‚©”»’è
-	bool finBattle();
+	bool finBattle() const;
 
-
+	int mFinTime = 0;
 };
 
 //========================================================================

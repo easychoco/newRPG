@@ -20,7 +20,7 @@ Enemy::~Enemy()
 
 void Enemy::initialize()
 {
-
+	SAFE_DELETE(act);
 }
 
 bool Enemy::attack(StringController* _sController, const vector<Actor*>& _players)

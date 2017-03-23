@@ -28,12 +28,12 @@ public:
 	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, speed
 	struct Status {
 		const int ID;
-		const char* name;
+		char* name;
 		const bool isEnemy;
-		const int maxHP;
-		const int attack, defence;
-		const int mattack, mdefence;
-		const int speed;
+		int maxHP;
+		int attack, defence;
+		int mattack, mdefence;
+		int speed;
 	};
 
 	//速い順にソートするから,ソート用の関数を定義
@@ -54,8 +54,9 @@ public:
 	bool isAlive() const { return HP > 0; }
 	void damage(int _value) { this->HP = max(this->HP - _value, 0); }
 	int getHP() const { return HP; }
+	void setName(char* _name) { status.name = _name; }
 
-	const Status status;
+	Status status;
 
 protected:
 	int HP;

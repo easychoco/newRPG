@@ -3,6 +3,7 @@
 #include "FieldNS\FieldMain.h"
 #include "BattleNS\BattleMain.h"
 #include "GameMainChild.h"
+#include "MiddleMain.h"
 
 #include "..\..\..\Data.h"
 #include "..\..\..\KeyInput.h"
@@ -28,20 +29,16 @@ void GameMain::initialize()
 
 void GameMain::update(GameParent* _parent)
 {
-	mChild->update(_parent);
+
+	Child* next = mChild->update(_parent);
 
 	//ゲームシーン変更
-	GameScene next = mChild->changeScene();
+	//Child* next = mChild->changeScene();
 
-	if (next != GameScene::SCENE_NONE)
+	if (next != mChild)
 	{
 		SAFE_DELETE(mChild);
-		switch (next)
-		{
-		case GameScene::SCENE_FIELD: mChild = new FieldNS::Main(); break;
-		case GameScene::SCENE_BATTLE: mChild = new BattleNS::Main(); break;
-		default: assert(!"不正なシーン変更!");
-		}
+		mChild = next;
 	}
 
 }

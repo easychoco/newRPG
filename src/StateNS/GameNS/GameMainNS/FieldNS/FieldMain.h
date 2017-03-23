@@ -18,9 +18,8 @@ public:
 	Main();
 	~Main();
 	void initialize();
-	void update(GameParent*);
+	Child* update(GameParent*);
 	void draw() const;
-	GameScene changeScene();
 	bool canPass(int, int) const;
 private:
 	//Ÿ‚ÌƒV[ƒ“

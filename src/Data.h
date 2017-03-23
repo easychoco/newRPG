@@ -1,18 +1,19 @@
 #pragma once
 
 #include "DXLib.h"
-#include <array>
 #include <cassert>
+#include <array>
 #include <string>
-#include <vector>
 #include <queue>
+#include <vector>
 #include <algorithm>
 
 
 using std::array;
 using std::string;
-using std::vector;
 using std::queue;
+using std::vector;
+
 
 //‰~Žü—¦
 #define Pi 3.14159265358979f
@@ -138,6 +139,6 @@ public:
 
 }
 
-
 using MyData::Vector2;
+
 

@@ -2,6 +2,7 @@
 #include "FieldStage.h"
 #include "FieldPlayer.h"
 #include "FieldSystem.h"
+#include "..\MiddleMain.h"
 
 #include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
@@ -32,15 +33,19 @@ void Main::initialize()
 	mGameSystem = new GameSystem();
 }
 
-void Main::update(GameParent* _parent)
+Child* Main::update(GameParent* _parent)
 {
+	Child* next = this;
+
 	//Aキーでバトルへ
-	if (Input_A())mNext = GameScene::SCENE_BATTLE;
+	if (Input_A())next = new MiddleMain(GameScene::SCENE_BATTLE);
 
 	//update
 	mStage->update();
 	mPlayer->update(this);
 	mGameSystem->update();
+
+	return next;
 }
 
 void Main::draw() const
@@ -49,12 +54,6 @@ void Main::draw() const
 	mStage->draw(mPlayer->getVector2());
 	mPlayer->draw();
 	mGameSystem->draw();
-
-}
-
-GameScene Main::changeScene()
-{
-	return mNext;
 }
 
 bool Main::canPass(int px, int py) const

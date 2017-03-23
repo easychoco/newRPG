@@ -5,6 +5,7 @@
 #include "BattlePlayer.h"
 #include "BattleEnemy.h"
 #include "BattleStringController.h"
+#include "..\MiddleMain.h"
 
 #include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
@@ -50,44 +51,46 @@ void Main::initialize()
 	mChild = new Decide(actors);
 }
 
-void Main::update(GameParent* _parent)
+Child* Main::update(GameParent* _parent)
 {
+	Child* next = this;
+
 	mTime++;
 
 	//背景の処理
 	stage->update();
 
+	BattleChild* nextChild = 0;
+
 	//バトルの処理(Stateパターン)
-	BattleChild* next = mChild->update(aController, sController, actors);
+	if(!finBattle())
+		nextChild = mChild->update(aController, sController, actors);
 
 	//シーケンス更新
-	if (mChild != next)
+	if (mChild != nextChild)
 	{
 		SAFE_DELETE(mChild);
-		mChild = next;
+		mChild = nextChild;
 	}
 
+	if (finBattle())mFinTime++;
+	
 	//Sキーでフィールドへ
-	if (Input_S() || finBattle())
-		mNext = GameScene::SCENE_FIELD;
+	if (mFinTime > 60 || Input_S())
+		next = new MiddleMain(GameScene::SCENE_FIELD);
 
+	return next;
 }
 
 void Main::draw() const
 {
 	DrawFormatString(0, 40, MyData::WHITE, "BattleMain");
 	stage->draw();
-	drawStatus(0, 250, players);
-	drawStatus(440, 250, enemies);
+	drawStatus(  0, 330 - players.size() * 40, players);//330はメッセージ枠の上端
+	drawStatus(440, 330 - enemies.size() * 40, enemies);//330は(ry
 	sController->draw();
-	mChild->draw(aController);
+	if(!finBattle())mChild->draw(aController);
 	aController->draw();
-}
-
-//次の場面を返す
-GameScene Main::changeScene()
-{
-	return mNext;
 }
 
 
@@ -97,16 +100,22 @@ GameScene Main::changeScene()
 void Main::addActor()
 {
 	//Actor配列の作成
-	Actor::Status p1{ 0, "プレイヤー", false, 5100, 109, 80, 1000, 100, 100 };
+	Actor::Status p1{ 0, "ゆうしゃ", false, 50, 8, 5, 8, 5, 5 };
 	actors.push_back(new Player(p1));
 
-	Actor::Status p2{ 1, "プレイヤー", false, 300, 100, 70, 5000, 510, 510 };
+	Actor::Status p2{ 1, "まほうつかい", false, 30, 1, 2, 10, 8, 10 };
 	actors.push_back(new Player(p2));
 
-	Actor::Status e1{ 2, "てきだぞ", true, 100, 10, 10, 10, 10000, 10 };
+	Actor::Status p3{ 2, "そうりょ", false, 60, 3, 10, 3, 10, 5 };
+	actors.push_back(new Player(p3));
+
+	Actor::Status p4{ 3, "ぶとうか", false, 40, 10, 10, 2, 2, 6 };
+	actors.push_back(new Player(p4));
+
+	Actor::Status e1{ 4, "てきだぞ", true, 100, 100, 100, 100, 100, 100 };
 	actors.push_back(new Enemy(e1));
 
-	Actor::Status e2{ 3, "てきです", true, 100, 10, 10, 10, 10000, 10 };
+	Actor::Status e2{ 5, "てきです", true, 100, 100, 100, 100, 100, 100 };
 	actors.push_back(new Enemy(e2));
 
 
@@ -114,7 +123,7 @@ void Main::addActor()
 	//参照によりactorsと同じインスタンスを使う
 	for (auto &actor : actors)
 	{
-		if (actor->status.isEnemy && actor->isAlive())enemies.push_back(actor);
+		if (actor->status.isEnemy)enemies.push_back(actor);
 		else players.push_back(actor);
 	}
 }
@@ -122,7 +131,7 @@ void Main::addActor()
 void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 {
 	//描画する範囲の下端
-	int bottom = _y + players.size() * 40;
+	int bottom = _y + _actor.size() * 40;
 
 	//てきとうに200
 	int right = _x + 200;
@@ -142,14 +151,22 @@ void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 	}
 }
 
-bool Main::finBattle()
+bool Main::finBattle() const
 {
-	bool fin = false;
+	bool eFin = false;
 	for (auto& ene : enemies)
 	{
-		fin |= ene->isAlive();
+		eFin |= ene->isAlive();
 	}
-	return !fin;
+
+	bool pFin = false;
+	{
+		for (auto& player : players)
+		{
+			pFin |= player->isAlive();
+		}
+	}
+	return !(eFin & pFin);
 }
 
 
@@ -187,7 +204,7 @@ void Decide::initialize(vector<Actor*>& vec_act)
 	{
 		if (actor->isAlive())
 		{
-			if (actor->status.isEnemy && actor->isAlive())enemies.push_back(actor);
+			if (actor->status.isEnemy)enemies.push_back(actor);
 			else players.push_back(actor);
 		}
 	}
