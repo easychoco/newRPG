@@ -39,7 +39,7 @@ public:
 	//速い順にソートするから,ソート用の関数を定義
 	static bool cmp(Actor* mine, Actor* other)
 	{
-		return ((mine->status).speed > (other->status).speed);
+		return ( (mine->status).speed > (other->status).speed );
 	}
 
 	//コンストラクタ

@@ -21,6 +21,10 @@ Player::~Player()
 
 void Player::initialize()
 {
+	//この関数は各ターンの初めにも呼ばれる
+	//actはターンごとに新しくするから,以前のものはdelete
+	SAFE_DELETE(act);
+
 	mState = SELECT_MOVE;
 	mMove = mCursorPos = 0;
 	mPrePush = true;

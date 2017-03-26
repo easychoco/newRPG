@@ -38,7 +38,7 @@ Child* Main::update(GameParent* _parent)
 	Child* next = this;
 
 	//Aキーでバトルへ
-	if (Input_A())next = new MiddleMain(GameScene::SCENE_BATTLE);
+	if (Input_A())next = new MiddleMain(GameScene::SCENE_BATTLE, 1);
 
 	//update
 	mStage->update();

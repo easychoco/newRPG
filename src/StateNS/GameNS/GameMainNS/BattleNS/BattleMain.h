@@ -103,9 +103,10 @@ public:
 	void initialize();
 	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
 	void draw(ActionController*) const;
-
-
 };
+
+
+
 
 }
 }

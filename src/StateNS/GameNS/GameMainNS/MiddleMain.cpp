@@ -2,6 +2,9 @@
 #include "BattleNS\BattleMain.h"
 #include "FieldNS\FieldMain.h"
 
+#include "BattleNS\BattleStringController.h"
+#include "..\..\..\KeyInput.h"
+
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS{
@@ -9,9 +12,9 @@ namespace GameMainNS{
 
 
 
-MiddleMain::MiddleMain(GameScene _nextScene) :
+MiddleMain::MiddleMain(GameScene _nextScene, int _arg) :
 nextScene(_nextScene){
-	initialize();
+	initialize(_arg);
 }
 
 MiddleMain::~MiddleMain()
@@ -19,14 +22,14 @@ MiddleMain::~MiddleMain()
 	SAFE_DELETE(mChild);
 }
 
-void MiddleMain::initialize()
+void MiddleMain::initialize(int _arg)
 {
-	mTime = 0;
+	arg = _arg;
 	switch (nextScene)
 	{
-	case GameScene::SCENE_BATTLE: mChild = new ToBattle(); break;
-	case GameScene::SCENE_FIELD: mChild = new ToField(); break;
-	default: assert(!"不正な状態遷移");
+	case GameScene::SCENE_BATTLE: mChild = new ToBattle(arg); break;
+	case GameScene::SCENE_FIELD: mChild = new ToField(arg); break;
+	default: assert(!"不正な状態遷移 MiddleMain::initialize()");
 	}
 }
 
@@ -44,9 +47,8 @@ Child* MiddleMain::update(GameParent* _parent)
 		{
 		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(); break;
 		case GameScene::SCENE_FIELD: next = new FieldNS::Main(); break;
-		default: assert(!"不正な状態遷移");
+		default: assert(!"不正な状態遷移 MiddleMain::update()");
 		}
-
 	}
 
 	return next;
@@ -65,9 +67,9 @@ void MiddleMain::draw() const
 //======================================
 // ToBattleクラス
 //======================================
-ToBattle::ToBattle()
+ToBattle::ToBattle(int _arg)
 {
-	initialize();
+	initialize(_arg);
 }
 
 ToBattle::~ToBattle()
@@ -75,9 +77,10 @@ ToBattle::~ToBattle()
 
 }
 
-void ToBattle::initialize()
+void ToBattle::initialize(int _arg)
 {
 	mTime = 0;
+	arg = _arg;
 }
 
 void ToBattle::update()
@@ -96,9 +99,9 @@ void ToBattle::draw() const
 //======================================
 // ToFieldクラス
 //======================================
-ToField::ToField()
+ToField::ToField(int _arg)
 {
-	initialize();
+	initialize(_arg);
 }
 
 ToField::~ToField()
@@ -106,25 +109,55 @@ ToField::~ToField()
 
 }
 
-void ToField::initialize()
+void ToField::initialize(int _arg)
 {
+	sController = new BattleNS::StringController();
+	sController->addMessage("てす");
+	sController->addMessage("てすてす");
+	sController->addMessage("てすてすてす");
+	sController->addMessage("てすてすてすてす");
+
 	mTime = 0;
+	arg = _arg;
+
+	//経験値が0なら負け
+	win = (arg != 0);
+
+	mImg = LoadGraph("Data/player_up.png");
+	mBackImg = LoadGraph("Data/BattleBackTmp.png");
 }
 
 void ToField::update()
 {
-	//経験値の計算
-	//いわゆるリザルト画面
+	//リザルト画面
 	mTime++;
-	mGoNext = mTime > 60;
+	mGoNext = mTime > 180;
+
+
 }
 
 void ToField::draw() const
 {
-	DrawFormatString(0, 60, MyData::WHITE, "ToField");
+	//DrawFormatString(0, 60, MyData::WHITE, "ToField");
+
+	DrawGraph(0, 0, mBackImg, true);
+	drawResult(0, 0, mImg);
+	drawResult(320, 0, mImg);
+	drawResult(0, 240, mImg);
+	drawResult(320, 240, mImg);
+
+	//sController->draw();
 }
 
+void ToField::drawResult(int _x, int _y, int _img) const
+{
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
+	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::BLUE, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	DrawGraph(_x + 130, _y, _img, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 200);
 
+}
 
 
 

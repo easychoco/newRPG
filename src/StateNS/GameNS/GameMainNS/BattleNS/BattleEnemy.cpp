@@ -7,9 +7,10 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Enemy::Enemy(Status _s) :
+Enemy::Enemy(Status _s, int _exp) :
 Actor(_s)
 {
+	this->exp = _exp;
 	initialize();
 }
 
@@ -20,6 +21,8 @@ Enemy::~Enemy()
 
 void Enemy::initialize()
 {
+	//この関数は各ターンの初めにも呼ばれる
+	//actはターンごとに新しくするから,以前のものはdelete
 	SAFE_DELETE(act);
 }
 

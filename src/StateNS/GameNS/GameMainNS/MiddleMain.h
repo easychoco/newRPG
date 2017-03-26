@@ -8,20 +8,24 @@ namespace GameNS {
 namespace GameMainNS{
 
 class MiddleChild;
+namespace BattleNS 
+{
+	class StringController;
+}
 
 class MiddleMain : public Child
 {
 public:
-	MiddleMain(GameScene);
+	MiddleMain(GameScene, int arg);//arg は敵レベル，または獲得経験値
 	~MiddleMain();
-	void initialize();
+	void initialize(int);
 	Child* update(GameParent*);
 	void draw() const;
 
 private:
 	MiddleChild* mChild;
 	GameScene nextScene;
-	int mTime;
+	int arg;
 };
 
 //MiddleMainでつかうStateのChild
@@ -39,26 +43,45 @@ protected :
 class ToBattle : public MiddleChild
 {
 public:
-	ToBattle();
+	ToBattle(int _arg);
 	~ToBattle();
-	void initialize();
+	void initialize(int);
 	void update();
 	void draw() const;
 private:
 	int mTime;
+
+	//敵レベル
+	int arg;
 };
 
 class ToField : public MiddleChild
 {
 public:
-	ToField();
+	ToField(int _arg);
 	~ToField();
-	void initialize();
+	void initialize(int);
 	void update();
 	void draw() const;
 private:
 	int mTime;
+
+	int mImg;
+	int mBackImg;
+
+	//経験値
+	int arg;
+
+	//バトルに勝ったかどうか
+	bool win;
+
+	//メッセージ描画
+	BattleNS::StringController* sController;
+
+	//経験値とかステータス表示
+	void drawResult(int x, int y, int img) const;
 };
+
 
 
 }

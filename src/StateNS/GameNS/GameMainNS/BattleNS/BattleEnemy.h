@@ -11,14 +11,14 @@ namespace BattleNS {
 class Enemy : public Actor
 {
 public:
-	Enemy(Status);
+	Enemy(Status, int);
 	~Enemy();
 	void initialize();
 	bool attack(StringController*, const vector<Actor*>& _players);
 	void draw(vector<Actor*>) const;
 
 private:
-
+	int exp;
 };
 
 

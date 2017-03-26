@@ -77,7 +77,7 @@ Child* Main::update(GameParent* _parent)
 	
 	//Sキーでフィールドへ
 	if (mFinTime > 60 || Input_S())
-		next = new MiddleMain(GameScene::SCENE_FIELD);
+		next = new MiddleMain(GameScene::SCENE_FIELD, 0);
 
 	return next;
 }
@@ -113,10 +113,10 @@ void Main::addActor()
 	actors.push_back(new Player(p4));
 
 	Actor::Status e1{ 4, "てきだぞ", true, 100, 100, 100, 100, 100, 100 };
-	actors.push_back(new Enemy(e1));
+	actors.push_back(new Enemy(e1, 5));
 
 	Actor::Status e2{ 5, "てきです", true, 100, 100, 100, 100, 100, 100 };
-	actors.push_back(new Enemy(e2));
+	actors.push_back(new Enemy(e2, 5));
 
 
 	//playersとenemies配列の作成
@@ -286,6 +286,9 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 		next = new Decide(_actors);
 	}
 
+	//バトルが終わっていればFinishへ
+
+
 	return next;
 }
 
@@ -293,6 +296,8 @@ void Battle::draw(ActionController* _aController) const
 {
 	_aController->draw();
 }
+
+
 
 
 
