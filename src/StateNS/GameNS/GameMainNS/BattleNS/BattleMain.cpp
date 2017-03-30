@@ -10,6 +10,8 @@
 #include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
 
+#include<fstream>
+
 
 namespace StateNS {
 namespace GameNS {
@@ -17,9 +19,9 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Main::Main()
+Main::Main(const GameMain* _parent)
 {
-	initialize();
+	initialize(_parent->players);
 }
 
 Main::~Main()
@@ -27,8 +29,9 @@ Main::~Main()
 
 }
 
-void Main::initialize()
+void Main::initialize(vector<GameMainNS::GameMain::Status> _s)
 {
+
 	stage = new Stage();
 	aController = new ActionController();
 	sController = new StringController();
@@ -36,23 +39,18 @@ void Main::initialize()
 	mNext = GameScene::SCENE_NONE;
 	mTime = 0;
 
-	//メッセージ初期化
-	sController->addMessage("");
-	sController->addMessage("");
-	sController->addMessage("");
-	sController->addMessage("");
-
 	sController->addMessage("まものがあらわれた！");
 	
 	//バトルに参加するキャラクターの配列を作成
-	addActor();
+	addActor(_s);
 
 	//はじめは行動決定の場面
 	mChild = new Decide(actors);
 }
 
-Child* Main::update(GameParent* _parent)
+Child* Main::update(const GameMain* _parent)
 {
+
 	Child* next = this;
 
 	mTime++;
@@ -63,59 +61,97 @@ Child* Main::update(GameParent* _parent)
 	BattleChild* nextChild = 0;
 
 	//バトルの処理(Stateパターン)
-	if(!finBattle())
+	//if(!finBattle())
 		nextChild = mChild->update(aController, sController, actors);
 
-	//シーケンス更新
+	//バトルのシーケンス更新
 	if (mChild != nextChild)
 	{
 		SAFE_DELETE(mChild);
 		mChild = nextChild;
 	}
 
-	if (finBattle())mFinTime++;
-	
-	//Sキーでフィールドへ
-	if (mFinTime > 60 || Input_S())
-		next = new MiddleMain(GameScene::SCENE_FIELD, 0);
+	if(mChild->goField())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
+
 
 	return next;
 }
 
 void Main::draw() const
 {
-	DrawFormatString(0, 40, MyData::WHITE, "BattleMain");
 	stage->draw();
-	drawStatus(  0, 330 - players.size() * 40, players);//330はメッセージ枠の上端
-	drawStatus(440, 330 - enemies.size() * 40, enemies);//330は(ry
-	sController->draw();
-	if(!finBattle())mChild->draw(aController);
-	aController->draw();
+	if (!finBattle())
+	{
+		drawStatus(0, 330 - players.size() * 40, players);//330はメッセージ枠の上端
+		drawStatus(440, 330 - enemies.size() * 40, enemies);//330は(ry
+		sController->draw();
+		aController->draw();
+	}
+	mChild->draw(aController);
 }
 
 
 //========================================================================
 // 内部private関数
 //========================================================================
-void Main::addActor()
+void Main::addActor(vector<GameMainNS::GameMain::Status> _s)
 {
 	//Actor配列の作成
-	Actor::Status p1{ 0, "ゆうしゃ", false, 50, 8, 5, 8, 5, 5 };
-	actors.push_back(new Player(p1));
 
-	Actor::Status p2{ 1, "まほうつかい", false, 30, 1, 2, 10, 8, 10 };
-	actors.push_back(new Player(p2));
+	//playerとenemy通しで使うID
+	int ID{ 0 };
 
-	Actor::Status p3{ 2, "そうりょ", false, 60, 3, 10, 3, 10, 5 };
-	actors.push_back(new Player(p3));
+	//ファイル読み込み
+	std::ifstream player_in("Data/Text/PlayerExp.txt");
 
-	Actor::Status p4{ 3, "ぶとうか", false, 40, 10, 10, 2, 2, 6 };
-	actors.push_back(new Player(p4));
+	//一人ずつ読み込んでvectorに追加
+	while (player_in)
+	{
+		int _ID{ -10 };
+		string name{"dummy"};
+		int exp { 0 };
 
-	Actor::Status e1{ 4, "てきだぞ", true, 100, 100, 100, 100, 100, 100 };
+		player_in >> _ID >> name >> exp;
+
+		//読み込みすぎていたらbreak
+		if (player_in.eof())break;
+
+		//IDが一致するキャラを探索
+		auto player = std::find_if(_s.begin(), _s.end(),
+			[_ID](auto &status) { return (status.ID == _ID); });
+
+		if (player == _s.end())
+		{
+			//対象のキャラクターがいなかったら終了
+			assert(!"ファイルが不正です");
+			exit(0);
+		}
+
+		//1000は次のレベルまでの必要経験値
+		int lv = 1 + exp / 1000;
+		
+		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
+
+		//能力値を計算
+		h = calcHP(player->h, lv);
+		a = calcStatus(player->a, lv);
+		b = calcStatus(player->b, lv);
+		c = calcStatus(player->c, lv);
+		d = calcStatus(player->d, lv);
+		s = calcStatus(player->s, lv);
+
+
+		Actor::Status _s{ ID, name, false, h, a, b, c, d, s };
+		actors.push_back(new Player(_s));
+
+		ID++;
+	}
+	
+	//敵の追加
+	Actor::Status e1{ ID++, "てきだぞ", true, 100, 100, 100, 100, 100, 100 };
 	actors.push_back(new Enemy(e1, 5));
 
-	Actor::Status e2{ 5, "てきです", true, 100, 100, 100, 100, 100, 100 };
+	Actor::Status e2{ ID++, "てきです", true, 100, 100, 100, 100, 100, 100 };
 	actors.push_back(new Enemy(e2, 5));
 
 
@@ -144,7 +180,7 @@ void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 	for (auto &actor : _actor)
 	{
 		//5とか7とかは要・微調整
-		DrawFormatString(_x + 10, _y + 3 + 40 * i, MyData::BLACK, "%s %d / %d", actor->status.name, actor->getHP(), actor->status.maxHP);
+		DrawFormatString(_x + 10, _y + 3 + 40 * i, MyData::BLACK, "%s %d / %d", actor->status.name.c_str(), actor->getHP(), actor->status.maxHP);
 		DrawBox(_x + 5, _y + 40 * i + 20, _x + right - 5, _y + 40 * i + 30, MyData::WHITE, false);
 		DrawBox(_x + 7, _y + 40 * i + 22, _x + 7 + (right - 14) * actor->getHP() / actor->status.maxHP, _y + 40 * i + 28, MyData::GREEN, true);
 		i++;
@@ -168,6 +204,26 @@ bool Main::finBattle() const
 	}
 	return !(eFin & pFin);
 }
+
+int Main::calcHP(int _HP, int _lv) const
+{
+	return _HP * _lv * 2 / 7 + 10;
+}
+
+int Main::calcStatus(int _value, int _lv) const
+{
+	return _value * _lv / 7 + 5;
+}
+
+
+
+//========================================================================
+// ここからBattleChildたち
+//========================================================================
+
+
+
+
 
 
 
@@ -223,6 +279,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 {
 	BattleChild* next = this;
 
+
 	//攻撃を決定, 返り値は決まったかどうか(boolean)
 	doneNum += (players[doneNum])->attack(_sController, enemies);		
 
@@ -257,6 +314,7 @@ void Decide::draw(ActionController* gomi) const
 }
 
 
+
 //========================================================================
 // Battleクラス
 //========================================================================
@@ -279,16 +337,16 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 {
 	BattleChild* next = this;
 
+	//バトルが終わっていたらResultへ
+	if (finBattle(_actors))return new Result();
+
 	bool battleDone = _aController->update(_sController, _actors);
 
 	if (battleDone)
 	{
 		next = new Decide(_actors);
 	}
-
-	//バトルが終わっていればFinishへ
-
-
+	
 	return next;
 }
 
@@ -297,8 +355,81 @@ void Battle::draw(ActionController* _aController) const
 	_aController->draw();
 }
 
+bool Battle::finBattle(const vector<Actor*> _actors) const 
+{
+	bool f_enemy{ false };
+	bool f_player{false};
+
+	//f_playerとf_enemyにそれぞれisAlive()を足す(論理和)
+	for_each(_actors.begin(), _actors.end(), 
+		[&](Actor* act) 
+	{
+		if (act->status.isEnemy)f_enemy |= act->isAlive();
+		else f_player |= act->isAlive();
+	});
+
+	//f_enemyとf_playerについて...
+	//PlayerとEnemyのどちらかのHPがすべてゼロならfalseのまま
+	//HPがゼロでないActorが一つでもあればtrueになる
+	//どちらかがfalseならtrueが返される
+	return !(f_player & f_enemy);
+}
 
 
+//========================================================================
+// Resultクラス
+//========================================================================
+Result::Result()
+{
+	initialize();
+}
+
+Result::~Result()
+{
+
+}
+
+void Result::initialize()
+{
+	mImg = LoadGraph("Data/Image/player_up.png");
+	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
+
+	mTime = 0;
+}
+
+BattleChild* Result::update(ActionController* _aController, StringController* _sController, vector<Actor*> _actors)
+{
+	BattleChild* next = this;
+
+	mTime++;
+
+	return next;
+}
+
+void Result::draw(ActionController* _aController) const
+{
+	DrawFormatString(0, 60, MyData::WHITE, "Result");
+	DrawGraph(0, 0, mBackImg, true);
+	drawResult(0, 0, mImg);
+	drawResult(320, 0, mImg);
+	drawResult(0, 240, mImg);
+	drawResult(320, 240, mImg);
+}
+
+bool Result::goField() const
+{
+	return mTime > 60;
+}
+
+void Result::drawResult(int _x, int _y, int _img) const
+{
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
+	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::BLUE, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	DrawGraph(_x + 130, _y, _img, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 200);
+
+}
 
 
 }

@@ -114,7 +114,7 @@ void Player::draw(vector<Actor*> _enemies) const
 		for (auto &enemy : _enemies)
 		{
 			unsigned color = ((enemy->status.isEnemy) ? MyData::RED : MyData::GREEN);
-			DrawFormatString(350, 200 + 30 * i, color, "%s", enemy->status.name);
+			DrawFormatString(350, 200 + 30 * i, color, "%s", enemy->status.name.c_str());
 			i++;
 		}
 	}

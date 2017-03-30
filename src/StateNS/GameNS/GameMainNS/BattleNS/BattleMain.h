@@ -1,10 +1,14 @@
 #pragma once
 #include "..\GameMainChild.h"
+#include "..\GameMain.h"
 #include "..\..\..\..\Data.h"
 
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
+
+class GameMain;
+
 namespace BattleNS {
 
 class Stage;
@@ -19,10 +23,10 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main();
+	Main(const GameMain*);
 	~Main();
-	void initialize();
-	Child* update(GameParent*);
+	void initialize(vector<GameMainNS::GameMain::Status>);
+	Child* update(const GameMain*);
 	void draw() const;
 
 private:
@@ -34,6 +38,7 @@ private:
 	GameScene mNext;
 	BattleChild* mChild;
 	int mTime;
+	int mFinTime = 0;
 
 	//プレイヤーと敵が一緒に入っている配列
 	vector<Actor*> actors;
@@ -45,15 +50,20 @@ private:
 	vector<Actor*> enemies;
 
 	//Actorの配列を作成
-	void addActor();
+	void addActor(vector<GameMainNS::GameMain::Status>);
 
 	//プレイヤーのステータスを描画する
 	void drawStatus(int, int, const vector<Actor*>&) const;
 
-	//バトルが終わったか判定
+	//バトルが終わったかを判定する
 	bool finBattle() const;
 
-	int mFinTime = 0;
+	//HPを計算する
+	int calcHP(int, int) const;
+
+	//能力値を計算する
+	int calcStatus(int, int) const;
+
 };
 
 //========================================================================
@@ -65,6 +75,7 @@ public:
 	virtual ~BattleChild() {};
 	virtual BattleChild* update(ActionController*, StringController*, vector<Actor*>) = 0;
 	virtual void draw(ActionController*) const = 0;
+	virtual bool goField() const = 0;
 };
 
 //========================================================================
@@ -79,6 +90,7 @@ public:
 	void initialize(vector<Actor*>&);
 	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
 	void draw(ActionController*) const;
+	bool goField() const { return false; }
 private:
 	int doneNum = 0;
 
@@ -103,8 +115,36 @@ public:
 	void initialize();
 	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
 	void draw(ActionController*) const;
+	bool goField() const { return false; }
+
+private:
+	//バトルが終わったか
+	bool finBattle(const vector<Actor*>) const;
 };
 
+
+//========================================================================
+//バトル後のリザルト画面
+//Stateパターンだぜ
+//========================================================================
+class Result : public BattleChild
+{
+public:
+	Result();
+	~Result();
+	void initialize();
+	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
+	void draw(ActionController*) const;
+	bool goField() const;
+
+private:
+	int mImg;
+	int mBackImg;
+	int mTime;
+
+	void drawResult(int, int, int) const;
+
+};
 
 
 

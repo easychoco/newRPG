@@ -8,6 +8,7 @@
 #include "..\..\..\..\KeyInput.h"
 
 
+
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
@@ -33,7 +34,7 @@ void Main::initialize()
 	mGameSystem = new GameSystem();
 }
 
-Child* Main::update(GameParent* _parent)
+Child* Main::update(const GameMain* _parent)
 {
 	Child* next = this;
 

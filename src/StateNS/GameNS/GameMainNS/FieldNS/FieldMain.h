@@ -4,6 +4,9 @@
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
+
+class GameMain;
+
 namespace FieldNS{
 
 
@@ -18,7 +21,7 @@ public:
 	Main();
 	~Main();
 	void initialize();
-	Child* update(GameParent*);
+	Child* update(const GameMain*);
 	void draw() const;
 	bool canPass(int, int) const;
 private:

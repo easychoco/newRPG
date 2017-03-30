@@ -25,7 +25,7 @@ void Player::initialize()
 {
 	point = new Vector2{ 96000, 800000 };
 	
-	int tmp = LoadDivGraph("Data/player.png", 24, 6, 4, 32, 32, mImg);
+	int tmp = LoadDivGraph("Data/Image/player.png", 24, 6, 4, 32, 32, mImg);
 	assert(tmp == 0 && "player.pngì«Ç›çûÇ›ÉGÉâÅ[!");
 
 	mTime = 0;

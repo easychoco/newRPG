@@ -1,13 +1,16 @@
 #pragma once
 
 #include "GameMainChild.h"
+#include "GameMain.h"
 
 
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS{
 
+class GameMain;
 class MiddleChild;
+
 namespace BattleNS 
 {
 	class StringController;
@@ -19,7 +22,7 @@ public:
 	MiddleMain(GameScene, int arg);//arg は敵レベル，または獲得経験値
 	~MiddleMain();
 	void initialize(int);
-	Child* update(GameParent*);
+	Child* update(const GameMain*);
 	void draw() const;
 
 private:
@@ -68,6 +71,7 @@ private:
 
 	int mImg;
 	int mBackImg;
+
 
 	//経験値
 	int arg;

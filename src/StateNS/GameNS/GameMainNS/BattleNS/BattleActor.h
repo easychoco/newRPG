@@ -28,7 +28,7 @@ public:
 	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, speed
 	struct Status {
 		const int ID;
-		char* name;
+		string name;
 		const bool isEnemy;
 		int maxHP;
 		int attack, defence;
@@ -54,7 +54,7 @@ public:
 	bool isAlive() const { return HP > 0; }
 	void damage(int _value) { this->HP = max(this->HP - _value, 0); }
 	int getHP() const { return HP; }
-	void setName(char* _name) { status.name = _name; }
+	void setName(string _name) { status.name = _name; }
 
 	Status status;
 

@@ -29,7 +29,7 @@ void Enemy::initialize()
 bool Enemy::attack(StringController* _sController, const vector<Actor*>& _players)
 {
 	//—”‚Ås“®‚ğŒˆ’è
-	act = new Action(status.ID, GetRand(3), Action::Actions::ACT_ATTACK);
+	act = new Action(status.ID, GetRand(0), Action::Actions::ACT_ATTACK);
 	return true;
 }
 

@@ -11,6 +11,7 @@ namespace BattleNS {
 class Enemy : public Actor
 {
 public:
+	//status, exp
 	Enemy(Status, int);
 	~Enemy();
 	void initialize();

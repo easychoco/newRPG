@@ -1,13 +1,14 @@
 #pragma once
 
+#include <vector>
+
 
 namespace StateNS {
 namespace GameNS {
 
-class Play;
-using GameParent = Play;
-
 namespace GameMainNS{
+
+class GameMain;
 
 enum GameScene
 {
@@ -22,7 +23,7 @@ class Child
 {
 public:
 	virtual ~Child() {};
-	virtual Child* update(GameParent*) = 0;
+	virtual Child* update(const GameMain*) = 0;
 	virtual void draw() const = 0;
 };
 

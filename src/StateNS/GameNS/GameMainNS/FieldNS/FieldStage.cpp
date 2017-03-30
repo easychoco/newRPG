@@ -25,15 +25,15 @@ Stage::~Stage()
 void Stage::initialize()
 {
 	//画像読み込み
-	mBackImg = LoadGraph("Data/FieldBack.png");
-	int tmp = LoadDivGraph("Data/MapChip.png", 112, 16, 7, 32, 32, mapChip);
+	mBackImg = LoadGraph("Data/Image/FieldBack.png");
+	int tmp = LoadDivGraph("Data/Image/MapChip.png", 112, 16, 7, 32, 32, mapChip);
 
 	assert(mBackImg != 0 && "FieldStage画像読み込みエラー");
 	assert(tmp == 0 && "マップ画像読み込みエラー");
 
 
 	//マップデータ読み込み
-	std::ifstream fin("Data/stage.txt");
+	std::ifstream fin("Data/Text/stage.txt");
 	for (unsigned y = 0; y < mapData.size(); y++)
 	{
 		for (unsigned x = 0; x < mapData[0].size(); x++)

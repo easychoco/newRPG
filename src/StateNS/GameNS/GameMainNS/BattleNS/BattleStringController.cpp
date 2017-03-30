@@ -19,7 +19,12 @@ StringController::~StringController()
 
 void StringController::initialize()
 {
-	mFrameImg = LoadGraph("Data/BattleFrame.png");
+	mFrameImg = LoadGraph("Data/Image/BattleFrame.png");
+	
+	frameMessage.push_back("");
+	frameMessage.push_back("");
+	frameMessage.push_back("");
+	frameMessage.push_back("");
 }
 
 void StringController::update()
@@ -47,9 +52,18 @@ void StringController::addMessage(string _message)
 	frameMessage.push_back(_message);
 
 	
-	//メッセージがいっぱいなら先頭にある一番古いメッセージを削除
-	if(frameMessage.size() > 4)
-		frameMessage.erase(frameMessage.begin());
+	//先頭にある一番古いメッセージを削除
+	frameMessage.erase(frameMessage.begin());
+
+}
+
+//メッセージをリセット
+void StringController::resetMessage()
+{
+	addMessage("");
+	addMessage("");
+	addMessage("");
+	addMessage("");
 }
 
 

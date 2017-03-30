@@ -18,7 +18,7 @@ Stage::~Stage()
 
 void Stage::initialize()
 {
-	mBackImg = LoadGraph("Data/BattleBackTmp.png");
+	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
 	assert(mBackImg != -1 && "バトル背景画像読み込みエラー");
 }
 

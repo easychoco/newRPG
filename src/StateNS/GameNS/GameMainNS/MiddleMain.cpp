@@ -33,7 +33,7 @@ void MiddleMain::initialize(int _arg)
 	}
 }
 
-Child* MiddleMain::update(GameParent* _parent)
+Child* MiddleMain::update(const GameMain* _parent)
 {
 	Child* next = this;
 
@@ -45,7 +45,7 @@ Child* MiddleMain::update(GameParent* _parent)
 	{
 		switch (nextScene)
 		{
-		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(); break;
+		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(_parent); break;
 		case GameScene::SCENE_FIELD: next = new FieldNS::Main(); break;
 		default: assert(!"不正な状態遷移 MiddleMain::update()");
 		}
@@ -85,13 +85,13 @@ void ToBattle::initialize(int _arg)
 
 void ToBattle::update()
 {
-	//エンカウントを決める
 	mTime++;
 	mGoNext = mTime > 60;
 }
 
 void ToBattle::draw() const
 {
+	//エンカウントのアニメーション?
 	DrawFormatString(0, 60, MyData::WHITE, "ToBattle");
 }
 
@@ -123,8 +123,8 @@ void ToField::initialize(int _arg)
 	//経験値が0なら負け
 	win = (arg != 0);
 
-	mImg = LoadGraph("Data/player_up.png");
-	mBackImg = LoadGraph("Data/BattleBackTmp.png");
+	mImg = LoadGraph("Data/Image/player_up.png");
+	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
 }
 
 void ToField::update()
@@ -132,8 +132,6 @@ void ToField::update()
 	//リザルト画面
 	mTime++;
 	mGoNext = mTime > 180;
-
-
 }
 
 void ToField::draw() const

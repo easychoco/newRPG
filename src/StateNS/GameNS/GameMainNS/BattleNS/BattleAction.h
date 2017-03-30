@@ -54,6 +54,10 @@ public:
 
 	//s“®ƒLƒ…[
 	queue<Action*> actions;
+
+private:
+	void updateMessage(StringController*, vector<Actor*>);
+	void updateDamage(StringController*, vector<Actor*>);
 };
 
 

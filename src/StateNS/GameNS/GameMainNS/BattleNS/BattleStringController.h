@@ -19,6 +19,7 @@ public:
 	void update();
 	void draw() const;
 	void addMessage(string _message);
+	void resetMessage();
 
 private:
 	int mFrameImg;
