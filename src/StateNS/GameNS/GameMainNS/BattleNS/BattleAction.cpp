@@ -47,13 +47,16 @@ bool ActionController::update(StringController* _sController, vector<Actor*> _ac
 {
 	if (_actors.empty())return true;
 
-	//UŒ‚Ò‚ª“|‚ê‚Ä‚¢‚½‚çUŒ‚‚Í–³‚µ
-	if (!_actors[actions.front()->fromID]->isAlive())
-	{
-		actions.pop();
-	}
 
 	mTime++;
+
+	//UŒ‚Ò‚ª“|‚ê‚Ä‚¢‚½‚çUŒ‚‚Í–³‚µ
+	if (mTime <= 1 && !(_actors[actions.front()->fromID]->isAlive()))
+	{
+		mTime = 0;
+		this->actions.pop();
+		return actions.empty();
+	}
 
 	if (mTime == 30) 
 	{

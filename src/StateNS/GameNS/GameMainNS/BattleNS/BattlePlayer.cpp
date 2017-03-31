@@ -8,6 +8,7 @@ namespace GameNS {
 namespace GameMainNS {
 namespace BattleNS {
 
+
 Player::Player(Status _s) : 
 Actor(_s) 
 {

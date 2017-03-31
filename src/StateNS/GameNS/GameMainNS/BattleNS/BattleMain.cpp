@@ -294,8 +294,12 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 
 		while (!act_que.empty())
 		{
-			//ActionController‚É’Ç‰Á
-			_aController->addAction((act_que.front())->getAction());
+			//‚â‚ç‚ê‚Ä‚¢‚È‚©‚Á‚½‚çActionController‚É’Ç‰Á
+			if (act_que.front()->isAlive())
+			{
+				_aController->addAction((act_que.front())->getAction());
+				assert(act_que.front()->getAction() && "•s³‚Èaction");
+			}
 
 			//æ“ª‚ğpop
 			act_que.pop();
@@ -361,12 +365,11 @@ bool Battle::finBattle(const vector<Actor*> _actors) const
 	bool f_player{false};
 
 	//f_player‚Æf_enemy‚É‚»‚ê‚¼‚êisAlive()‚ğ‘«‚·(˜_—˜a)
-	for_each(_actors.begin(), _actors.end(), 
-		[&](Actor* act) 
+	for(auto* act : _actors) 
 	{
 		if (act->status.isEnemy)f_enemy |= act->isAlive();
 		else f_player |= act->isAlive();
-	});
+	}
 
 	//f_enemy‚Æf_player‚É‚Â‚¢‚Ä...
 	//Player‚ÆEnemy‚Ì‚Ç‚¿‚ç‚©‚ÌHP‚ª‚·‚×‚Äƒ[ƒ‚È‚çfalse‚Ì‚Ü‚Ü
