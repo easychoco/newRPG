@@ -9,8 +9,8 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Player::Player(Status _s) : 
-Actor(_s) 
+Player::Player(Status _s, int _exp) : 
+Actor(_s, _exp)
 {
 	initialize(); 
 };

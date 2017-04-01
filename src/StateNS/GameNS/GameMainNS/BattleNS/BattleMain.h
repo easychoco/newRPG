@@ -23,9 +23,9 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main(const GameMain*);
+	Main();
 	~Main();
-	void initialize(vector<GameMainNS::GameMain::Status>);
+	void initialize();
 	Child* update(const GameMain*);
 	void draw() const;
 
@@ -50,7 +50,7 @@ private:
 	vector<Actor*> enemies;
 
 	//Actorの配列を作成
-	void addActor(vector<GameMainNS::GameMain::Status>);
+	void addActor();
 
 	//プレイヤーのステータスを描画する
 	void drawStatus(int, int, const vector<Actor*>&) const;
@@ -118,10 +118,17 @@ public:
 	bool goField() const { return false; }
 
 private:
+	int mFinTime = 0;
+
 	//バトルが終わったか
 	bool finBattle(const vector<Actor*>) const;
-};
 
+	//バトル終了後のメッセージを出力
+	void updateMessage(StringController*, bool);
+
+	//バトルで得られる経験値を計算
+	int calcExp(vector<Actor*>);
+};
 
 //========================================================================
 //バトル後のリザルト画面
@@ -130,21 +137,58 @@ private:
 class Result : public BattleChild
 {
 public:
-	Result();
+	Result(int);
 	~Result();
-	void initialize();
+	void initialize(vector<Actor*>);
 	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
 	void draw(ActionController*) const;
 	bool goField() const;
 
 private:
+	class ResultStatus
+	{
+	public:
+		ResultStatus(Actor*, int);
+		~ResultStatus() { DeleteGraph(mImg); };
+		void initialize(Actor*, int);
+		void update();
+		void draw(int, int) const;
+
+		//セーブ用の文字列を作成
+		string getSaveString();
+
+		//次に行っていいか(レベルアップのアニメーションは終わったか)
+		bool goNext() const;
+
+	private:
+		//セーブ用
+		int ID;
+		std::string name;
+
+		int mTime;
+		int mImg;
+
+		int mAllExp;
+		int mNowExp;
+		int mAfterExp;
+
+		bool mLevelUp;
+		int mLevelTime;
+	};
+
+	bool initialized;
 	int mImg;
 	int mBackImg;
 	int mTime;
+	const int mGetExp;
 
-	void drawResult(int, int, int) const;
+	vector< ResultStatus* > players{};
 
+	//外部データにセーブ
+	void saveData();
 };
+
+
 
 
 

@@ -25,8 +25,7 @@ GameMain::~GameMain()
 
 void GameMain::initialize()
 {
-	loadPlayerData();
-	mChild = new BattleNS::Main(this);
+	mChild = new BattleNS::Main();
 }
 
 void GameMain::update(GameParent* _parent)
@@ -53,26 +52,8 @@ void GameMain::draw() const
 //==============================================
 //内部プライベート関数
 //==============================================
-void GameMain::loadPlayerData()
-{
-	std::ifstream player_in("Data/Text/PlayerData.txt");
 
-	//キャラをひとつづつvectorに追加
-	while (player_in)
-	{
-		int ID;
-		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
-		player_in >> ID >> h >> a >> b >> c >> d >> s;
-
-		if (player_in.eof())break;
-
-		Status _s{ ID, h, a, b, c, d, s };
-		players.push_back(_s);
-
-	}
-
-}
-
+//そんなものはない
 
 
 

@@ -11,7 +11,7 @@ namespace BattleNS {
 class Player : public Actor
 {
 public:
-	Player(Status);
+	Player(Status, int);
 	~Player();
 	void initialize();
 	bool attack(StringController*, const vector<Actor*>& _enemies);

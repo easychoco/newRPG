@@ -33,7 +33,6 @@ public:
 
 private:
 	Child* mChild;
-	void loadPlayerData();
 };
 
 

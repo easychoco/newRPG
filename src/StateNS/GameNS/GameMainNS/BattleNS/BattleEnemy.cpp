@@ -8,9 +8,8 @@ namespace BattleNS {
 
 
 Enemy::Enemy(Status _s, int _exp) :
-Actor(_s)
+Actor(_s, _exp)
 {
-	this->exp = _exp;
 	initialize();
 }
 

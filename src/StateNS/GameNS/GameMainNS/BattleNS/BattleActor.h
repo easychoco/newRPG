@@ -42,8 +42,8 @@ public:
 		return ( (mine->status).speed > (other->status).speed );
 	}
 
-	//コンストラクタ
-	Actor(Status _s) : status(_s) { HP = status.maxHP; act = 0; };
+	//コンストラクタ Status, exp
+	Actor(Status _s, int _exp) : status(_s), exp(_exp) { HP = status.maxHP; act = 0; };
 	virtual ~Actor() {};
 
 	//行動が決まったかどうかを返す
@@ -54,12 +54,14 @@ public:
 	bool isAlive() const { return HP > 0; }
 	void damage(int _value) { this->HP = max(this->HP - _value, 0); }
 	int getHP() const { return HP; }
+	int getExp() const { return exp; }
 	void setName(string _name) { status.name = _name; }
 
 	Status status;
 
 protected:
 	int HP;
+	const int exp;
 	Action* act;
 };
 

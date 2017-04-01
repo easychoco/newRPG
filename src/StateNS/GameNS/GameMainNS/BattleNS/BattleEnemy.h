@@ -17,9 +17,6 @@ public:
 	void initialize();
 	bool attack(StringController*, const vector<Actor*>& _players);
 	void draw(vector<Actor*>) const;
-
-private:
-	int exp;
 };
 
 

@@ -45,7 +45,7 @@ Child* MiddleMain::update(const GameMain* _parent)
 	{
 		switch (nextScene)
 		{
-		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(_parent); break;
+		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(); break;
 		case GameScene::SCENE_FIELD: next = new FieldNS::Main(); break;
 		default: assert(!"•s³‚Èó‘Ô‘JˆÚ MiddleMain::update()");
 		}
@@ -86,7 +86,7 @@ void ToBattle::initialize(int _arg)
 void ToBattle::update()
 {
 	mTime++;
-	mGoNext = mTime > 60;
+	mGoNext = mTime > 0;
 }
 
 void ToBattle::draw() const
@@ -131,7 +131,7 @@ void ToField::update()
 {
 	//ƒŠƒUƒ‹ƒg‰æ–Ê
 	mTime++;
-	mGoNext = mTime > 180;
+	mGoNext = mTime > 0;
 }
 
 void ToField::draw() const
