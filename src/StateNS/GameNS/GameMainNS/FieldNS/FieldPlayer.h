@@ -18,9 +18,14 @@ public:
 	void update(const FieldNS::Main*);
 	void draw() const;
 	const Vector2* getVector2() const { return point; }
+	bool isEncount() const { return mIsEncount; };
+
 private:
 	//座標ベクトル
 	Vector2* point;
+
+	//敵にエンカウントしたかどうか
+	bool mIsEncount;
 
 	//内部では1000倍した値を保持する
 	const int pointRate = MyData::vectorRate;
@@ -43,8 +48,11 @@ private:
 	// 内部private関数
 	//==================
 	//移動
-	void move(const FieldNS::Main*);
-	void move(float speed, const FieldNS::Main*);
+	bool move(const FieldNS::Main*);
+	bool move(float speed, const FieldNS::Main*);
+
+	//エンカウント
+	void encount();
 };
 
 

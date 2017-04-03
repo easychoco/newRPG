@@ -13,6 +13,7 @@ namespace FieldNS{
 class Stage;
 class Player;
 class GameSystem;
+class EncountAnimation;
 
 
 class Main : public Child
@@ -31,8 +32,24 @@ private:
 	Stage* mStage;
 	Player* mPlayer;
 	GameSystem* mGameSystem;
+	EncountAnimation* mEAnimation;
 
 };
+
+class EncountAnimation
+{
+public:
+	EncountAnimation();
+	~EncountAnimation();
+	void initialize();
+	bool update();
+	void draw() const;
+	bool cancelEncount() const;
+
+private:
+	int mTime;
+};
+
 
 
 

@@ -29,19 +29,22 @@ void Player::initialize()
 	assert(tmp == 0 && "player.png読み込みエラー!");
 
 	mTime = 0;
+	mIsEncount = false;
 	mGraphNum = 0;
 }
 
 void Player::update(const FieldNS::Main* _main)
 {
+	mIsEncount = false;
+
 	mTime++;
-	move(5.0f, _main);
+	bool moved = move(5.0f, _main);
+
+	if (moved)encount();
 }
 
 void Player::draw() const
 {
-	//DrawFormatString(100, 20, MyData::WHITE, "Player");
-	//DrawFormatString(180, 20, MyData::WHITE, "%d", mGraphNum);
 	
 	//自機描画
 
@@ -59,18 +62,18 @@ void Player::draw() const
 	//どちらでもないなら
 	else
 		DrawRotaGraph(draw_x, MyData::CY, 1.0, 0.0, mImg[mGraphNum], true);
-
 }
 
 //========================================================================
 // 内部private関数
 //========================================================================
-void Player::move(const FieldNS::Main* _main)
+bool Player::move(const FieldNS::Main* _main)
 {
-	move(1.0f, _main);
+	return move(1.0f, _main);
 }
 
-void Player::move(float _speed, const FieldNS::Main* _main)
+//移動速度可変版
+bool Player::move(float _speed, const FieldNS::Main* _main)
 {
 	//bitmask用のフラグ
 	unsigned char fDirection = 0b0000;
@@ -102,13 +105,13 @@ void Player::move(float _speed, const FieldNS::Main* _main)
 		else fDirection |= f_up;
 	}
 
-	//キー入力がないならreturn
+	//キー入力がないならreturn false
 	if (!fDirection)
 	{
 		//キーが押されていなかったら棒立ちの絵にする
 		//棒立ちのキャラクタチップの番号が1,4,7,10,...より
 		if (mGraphNum % 3 != 1)mGraphNum = mGraphNum / 3 * 3 + 1;
-		return;
+		return false;
 	}
 
 
@@ -204,6 +207,26 @@ void Player::move(float _speed, const FieldNS::Main* _main)
 	point->x = min(point->x, (MyData::MAP_WIDTH * pointRate) - 1);
 	point->y = max(point->y, 0);
 	point->y = min(point->y, (MyData::MAP_HEIGHT * pointRate) - 1);
+
+	//移動していたらreturn true
+	return fDirection != 0;
+}
+
+void Player::encount()
+{
+	static int encountTimer = 0;
+
+	//この関数が呼ばれるたびに乱数依存でカウンターを増やす
+	encountTimer += GetRand(1);
+
+	//タイマーが90を超えたら敵にエンカウント
+	if (encountTimer > 90)
+	{
+		mIsEncount = true;
+		encountTimer = 0;
+	}
+
+
 }
 
 

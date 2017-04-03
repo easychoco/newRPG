@@ -56,9 +56,14 @@ void Stage::draw(const Vector2* _player) const
 	drawMap(mapData, _player);
 }
 
-bool Stage::canPass(int px, int py)
+bool Stage::canPass(int _px, int _py) const
 {
-	return chip[mapData[py / MyData::vectorRate / 32][px / MyData::vectorRate / 32]].canPass;
+	return chip[mapData[_py / MyData::vectorRate / 32][_px / MyData::vectorRate / 32]].canPass;
+}
+
+int Stage::getEnemyLevel(const Vector2* _player) const
+{
+	return chip[mapData[_player->y / MyData::vectorRate / 32][_player->x / MyData::vectorRate / 32]].enemyLevel;
 }
 
 //========================================================================
@@ -83,6 +88,8 @@ void Stage::drawBack(const Vector2* _player) const
 	DrawGraph(draw_x, draw_y, mBackImg, true);
 }
 
+//マップチップが変わっても対応可能
+//第一引数にマップチップへのポインタを持ってくるためにtemplateを使用
 template<typename Arr>
 void Stage::drawMap(Arr _mapData, const Vector2* _player) const
 {

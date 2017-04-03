@@ -73,8 +73,7 @@ Child* Main::update(const GameMain* _parent)
 	BattleChild* nextChild = 0;
 
 	//バトルの処理(Stateパターン)
-	//if(!finBattle())
-		nextChild = mChild->update(aController, sController, actors);
+	nextChild = mChild->update(aController, sController, actors);
 
 	//バトルのシーケンス更新
 	if (mChild != nextChild)
@@ -83,7 +82,8 @@ Child* Main::update(const GameMain* _parent)
 		mChild = nextChild;
 	}
 
-	if(mChild->goField())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
+	if (Input_S())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
+	if (mChild->goField())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
 
 
 	return next;

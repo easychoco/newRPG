@@ -25,7 +25,7 @@ GameMain::~GameMain()
 
 void GameMain::initialize()
 {
-	mChild = new BattleNS::Main();
+	mChild = new FieldNS::Main();
 }
 
 void GameMain::update(GameParent* _parent)

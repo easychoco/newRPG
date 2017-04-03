@@ -16,7 +16,9 @@ public:
 	void initialize();
 	void update();
 	void draw(const Vector2* _player) const;
-	bool canPass(int px, int py);
+	bool canPass(int _px, int _py) const;
+	int getEnemyLevel(const Vector2*) const;
+
 private:
 	int mBackImg;
 
