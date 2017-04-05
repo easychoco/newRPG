@@ -219,8 +219,8 @@ void Player::encount()
 	//この関数が呼ばれるたびに乱数依存でカウンターを増やす
 	encountTimer += GetRand(1);
 
-	//タイマーが90を超えたら敵にエンカウント
-	if (encountTimer > 90)
+	//タイマーが60を超えたら敵にエンカウント
+	if (encountTimer > 60)
 	{
 		mIsEncount = true;
 		encountTimer = 0;

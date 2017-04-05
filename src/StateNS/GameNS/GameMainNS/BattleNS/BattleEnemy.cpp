@@ -25,14 +25,14 @@ void Enemy::initialize()
 	SAFE_DELETE(act);
 }
 
-bool Enemy::attack(StringController* _sController, const vector<Actor*>& _players)
+bool Enemy::attack(StringController* _sController, const vector<Actor*>& _enemies, const vector<Actor*>& _players)
 {
 	//—”‚Ås“®‚ğŒˆ’è
 	act = new Action(status.ID, GetRand(0), Action::Actions::ACT_ATTACK);
 	return true;
 }
 
-void Enemy::draw(vector<Actor*>) const
+void Enemy::draw(vector<Actor*>, vector<Actor*>) const
 {
 
 }

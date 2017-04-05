@@ -14,10 +14,9 @@ public:
 	Player(Status, int);
 	~Player();
 	void initialize();
-	bool attack(StringController*, const vector<Actor*>& _enemies);
-	void draw(vector<Actor*>) const;
-
-
+	bool attack(StringController*, const vector<Actor*>& _enemies, const vector<Actor*>&);
+	void draw(vector<Actor*>, vector<Actor*>) const;
+	
 	bool mPrePush;
 
 private:

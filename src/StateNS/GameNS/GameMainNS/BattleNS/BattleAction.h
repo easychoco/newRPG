@@ -18,7 +18,8 @@ public:
 	{
 		ACT_ATTACK,
 		ACT_MAGIC,
-		ACT_SPECIAL,
+		ACT_RECOVER,
+		ACT_ESCAPE,
 
 		ACT_NONE,
 	};
@@ -48,7 +49,7 @@ public:
 	bool update(StringController*, vector<Actor*>);
 	void draw() const;
 	void addAction(Action* a);
-	bool processAction();
+	bool escapeBattle();
 
 	unsigned mTime;
 
@@ -57,8 +58,13 @@ private:
 	//行動キュー
 	queue<Action*> actions;
 
+	//行動開始のメッセージ
 	void updateMessage(StringController*, vector<Actor*>);
+
+	//行動結果のメッセージ
 	void updateDamage(StringController*, vector<Actor*>);
+
+	bool isEscape;
 };
 
 

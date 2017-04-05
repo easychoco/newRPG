@@ -18,14 +18,14 @@ const array< Action::Actions, 4 > toAction
 {
 	Action::Actions::ACT_ATTACK,
 	Action::Actions::ACT_MAGIC,
-	Action::Actions::ACT_SPECIAL,
-	Action::Actions::ACT_SPECIAL,
+	Action::Actions::ACT_RECOVER,
+	Action::Actions::ACT_ESCAPE,
 };
 
 class Actor
 {
 public:
-	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, speed
+	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, recover, speed
 	struct Status {
 		const int ID;
 		string name;
@@ -33,6 +33,7 @@ public:
 		int maxHP;
 		int attack, defence;
 		int mattack, mdefence;
+		int recover;
 		int speed;
 	};
 
@@ -47,14 +48,16 @@ public:
 	virtual ~Actor() {};
 
 	//çsìÆÇ™åàÇ‹Ç¡ÇΩÇ©Ç«Ç§Ç©Çï‘Ç∑
-	virtual bool attack(StringController*, const vector<Actor*>&) = 0;
-	virtual void draw(vector<Actor*>) const = 0;
+	virtual bool attack(StringController*, const vector<Actor*>&, const vector<Actor*>&) = 0;
+	virtual void draw(vector<Actor*>, vector<Actor*>) const = 0;
 	virtual void initialize() = 0;
-	Action* getAction() const { return act; };
+
 	bool isAlive() const { return HP > 0; }
 	void damage(int _value) { this->HP = max(this->HP - _value, 0); }
+	void recover(int _value) { this->HP = min(status.maxHP, this->HP + _value);	}
 	int getHP() const { return HP; }
 	int getExp() const { return exp; }
+	Action* getAction() const { return act; };
 	void setName(string _name) { status.name = _name; }
 
 	Status status;

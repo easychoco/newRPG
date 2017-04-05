@@ -15,8 +15,8 @@ public:
 	Enemy(Status, int);
 	~Enemy();
 	void initialize();
-	bool attack(StringController*, const vector<Actor*>& _players);
-	void draw(vector<Actor*>) const;
+	bool attack(StringController*, const vector<Actor*>& _players, const vector<Actor*>&);
+	void draw(vector<Actor*>, vector<Actor*>) const;
 };
 
 

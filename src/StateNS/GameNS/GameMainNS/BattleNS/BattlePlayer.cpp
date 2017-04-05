@@ -32,7 +32,7 @@ void Player::initialize()
 	mFirstCome = true;
 }
 
-bool Player::attack(StringController* _sController, const vector<Actor*>& _enemies)
+bool Player::attack(StringController* _sController, const vector<Actor*>& _enemies, const vector<Actor*>& _players)
 {
 	//初めて来たときの処理
 	if (mFirstCome)
@@ -50,10 +50,10 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 		if (Input_UP())mCursorPos--;
 		if (Input_DOWN())mCursorPos++;
 
+		int max_num = ((mState == SELECT_MOVE) ? 4 : (int)_enemies.size());
 
-		int max_num = ((mState == SELECT_MOVE) ? 3 : (int)_enemies.size() - 1);
-		mCursorPos = max(mCursorPos, 0);
-		mCursorPos = min(mCursorPos, max_num);
+		//カーソルが範囲からはみ出さないように調整
+		mCursorPos = (mCursorPos + max_num) % max_num;
 
 		//行動決定場面
 		if (mState == SELECT_MOVE)mMove = mCursorPos;
@@ -64,6 +64,14 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 			//行動決定画面なら対象決定へ
 			if (mState == SELECT_MOVE)
 			{
+				//逃げるなら早期return
+				if (toAction[mMove] == Action::Actions::ACT_ESCAPE)
+				{
+					act = new Action(status.ID, status.ID, Action::Actions::ACT_ESCAPE);
+					return true;
+				}
+
+				//逃げないなら
 				mCursorPos = 0;
 				mState = SELECT_TARGET;
 			}
@@ -71,8 +79,17 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 			//対象決定画面なら次へ
 			else if (mState == SELECT_TARGET)
 			{
-				//攻撃対象はmCursorPos
-				act = new Action(status.ID, _enemies[mCursorPos]->status.ID, toAction[mMove]);
+				if (toAction[mMove] == Action::Actions::ACT_RECOVER)
+				{
+					//回復対象はmCursorPos
+					act = new Action(status.ID, _players[mCursorPos]->status.ID, Action::Actions::ACT_RECOVER);
+				}
+				else
+				{
+					//攻撃対象はmCursorPos
+					act = new Action(status.ID, _enemies[mCursorPos]->status.ID, toAction[mMove]);
+				}
+				//行動が決まったからreturn true
 				return true;
 			}
 		}
@@ -90,8 +107,7 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 	return false;
 }
 
-
-void Player::draw(vector<Actor*> _enemies) const
+void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 {
 	//DrawRotaGraph(_x, _y, 1.0, 0.0, mImg, true);
 
@@ -101,7 +117,7 @@ void Player::draw(vector<Actor*> _enemies) const
 
 	DrawFormatString(230, 200, MyData::WHITE, "こうげき");
 	DrawFormatString(230, 230, MyData::WHITE, "まほう");
-	DrawFormatString(230, 260, MyData::WHITE, "とくしゅ");
+	DrawFormatString(230, 260, MyData::WHITE, "かいふく");
 	DrawFormatString(230, 290, MyData::WHITE, "にげる");//TODO -> "逃げる"の実装
 	DrawCircle(220, 205 + mMove * 30, 5, MyData::WHITE);
 
@@ -112,11 +128,23 @@ void Player::draw(vector<Actor*> _enemies) const
 		DrawCircle(340, 205 + 30 * mCursorPos, 5, MyData::WHITE);
 
 		int i = 0;
-		for (auto &enemy : _enemies)
+
+		//回復なら
+		if (toAction[mMove] == Action::Actions::ACT_RECOVER)
 		{
-			unsigned color = ((enemy->status.isEnemy) ? MyData::RED : MyData::GREEN);
-			DrawFormatString(350, 200 + 30 * i, color, "%s", enemy->status.name.c_str());
-			i++;
+			for (auto &player : _players)
+			{
+				DrawFormatString(350, 200 + 30 * i, MyData::GREEN, "%s", player->status.name.c_str());
+				i++;
+			}
+		}
+		else
+		{
+			for (auto &enemy : _enemies)
+			{
+				DrawFormatString(350, 200 + 30 * i, MyData::RED, "%s", enemy->status.name.c_str());
+				i++;
+			}
 		}
 	}
 

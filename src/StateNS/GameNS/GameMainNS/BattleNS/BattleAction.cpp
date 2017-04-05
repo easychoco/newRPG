@@ -41,6 +41,7 @@ ActionController::~ActionController()
 void ActionController::initialize()
 {
 	mTime = 0;
+	isEscape = false;
 }
 
 bool ActionController::update(StringController* _sController, vector<Actor*> _actors)
@@ -87,11 +88,11 @@ void ActionController::addAction(Action* _a)
 	actions.push(_a);
 }
 
-//行動の処理が終わったらreturn true
-bool ActionController::processAction()
+bool ActionController::escapeBattle()
 {
-	return true;
+	return isEscape && mTime > 20;
 }
+
 
 //========================================================================
 // 内部private関数
@@ -99,21 +100,72 @@ bool ActionController::processAction()
 void ActionController::updateMessage(StringController* _sController, vector<Actor*> _actors)
 {
 	//メッセージ生成と追加
+
+	//まず名前を追加
 	string s = _actors[actions.front()->fromID]->status.name;
 	s += " の ";
+
+	//回復なら
+	if (actions.front()->act == Action::Actions::ACT_RECOVER)
+	{
+		s += "かいふく！";
+		_sController->addMessage(s);
+		return;
+	}
+
+	//逃げるなら
+	if (actions.front()->act == Action::Actions::ACT_ESCAPE)
+	{
+		s += "にげる！";
+		_sController->addMessage(s);
+		return;
+	}
+
+	//攻撃か魔法なら
 
 	//ATTACKかMAGICかでメッセージ変更
 	if (actions.front()->act == Action::Actions::ACT_ATTACK) s += "こうげき";
 	else if (actions.front()->act == Action::Actions::ACT_MAGIC) s += "まほう";
 	_sController->addMessage(s);
+
+	return;
 }
 
 void ActionController::updateDamage(StringController* _sController, vector<Actor*> _actors)
 {
+	string s = _actors[actions.front()->fromID]->status.name;
+
+	//逃げるなら
+	if (actions.front()->act == Action::Actions::ACT_ESCAPE)
+	{
+		isEscape = true;
+
+		//メッセージ追加
+		s += " は にげだした！";
+		_sController->addMessage(s);
+		return;
+	}
+
 	int from = actions.front()->fromID;
 	int to = actions.front()->toID;
 
-	//攻撃対象が倒れていたら別のキャラを狙う
+	//回復なら
+	if (actions.front()->act == Action::Actions::ACT_RECOVER)
+	{
+		//回復
+		_actors[to]->recover(_actors[from]->status.recover);
+
+		//メッセージ追加
+		s += " は ";
+		s += std::to_string(_actors[from]->status.recover);
+		s += " かいふく！";
+		_sController->addMessage(s);
+		return;
+	}
+
+	//攻撃か魔法なら
+
+	//攻撃対象がやられていたら別のキャラを狙う
 	if (!_actors[to]->isAlive())
 	{
 		int i = 0;
@@ -162,7 +214,6 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	_actors[to]->damage(damage_value);
 
 	//メッセージ作成と追加
-	string s = _actors[to]->status.name;
 	s += " に ";
 	s += std::to_string(damage_value);
 	s += "のダメージ!";

@@ -155,8 +155,11 @@ void Main::addActor()
 		d = calcStatus(player->d, lv);
 		s = calcStatus(player->s, lv);
 
+		//回復量を計算
+		int r = h - abs(a - c);
+		r = max(r / 3, min(a, c));
 
-		Actor::Status status{ ID, name, false, h, a, b, c, d, s };
+		Actor::Status status{ ID, name, false, h, a, b, c, d, r, s };
 		actors.push_back(new Player(status, exp));
 
 		ID++;
@@ -170,9 +173,8 @@ void Main::addActor()
 	for (int i = 0; i < ene_num; i++)
 	{
 		string name = "てき" + std::to_string(i + 1);
-		Actor::Status e{ ID++, name.c_str(), true, 10, 10, 10, 10, 10, 10 };
+		Actor::Status e{ ID++, name.c_str(), true, 10, 10, 10, 10, 10, 10, 10 };
 		actors.push_back(new Enemy(e, 5));
-
 	}
 
 	//playersとenemies配列の作成
@@ -204,6 +206,9 @@ void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 		DrawBox(_x + 5, _y + 40 * i + 20, _x + 200, _y + 40 * i + 30, MyData::WHITE, false);
 		DrawBox(_x + 7, _y + 40 * i + 22, _x + 7 + 191 * actor->getHP() / actor->status.maxHP, _y + 40 * i + 28, MyData::GREEN, true);
 		i++;
+
+		//for Debug
+		DrawFormatString(_x, 40 * i, MyData::BLACK, "%d", actor->status.recover);
 	}
 }
 
@@ -301,7 +306,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 
 
 	//攻撃を決定, 返り値は決まったかどうか(boolean)
-	doneNum += (players[doneNum])->attack(_sController, enemies);		
+	doneNum += (players[doneNum])->attack(_sController, enemies, players);
 
 	//全てのplayerの行動が決まったら
 	if(doneNum >= (int)players.size())
@@ -309,7 +314,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 		//敵の行動を決める
 		for (auto& ene : enemies)
 		{
-			ene->attack(_sController, players);
+			ene->attack(_sController, enemies, players);
 		}
 
 		while (!act_que.empty())
@@ -317,6 +322,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 			//やられていなかったらActionControllerに追加
 			if (act_que.front()->isAlive())
 			{
+				//逃げていないなら
 				_aController->addAction((act_que.front())->getAction());
 				assert(act_que.front()->getAction() && "不正なaction");
 			}
@@ -334,7 +340,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 
 void Decide::draw(ActionController* gomi) const
 {
-	(players[doneNum])->draw(enemies);
+	(players[doneNum])->draw(enemies, players);
 }
 
 
@@ -373,6 +379,12 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 	else 	//バトル中
 	{
 		bool battleDone = _aController->update(_sController, _actors);
+
+		//逃げていたら
+		if (_aController->escapeBattle())
+		{
+			return new Result(0);
+		}
 
 		//行動選択へ
 		//ターン終了と同時にバトルが終わった場合は行動選択をせずに終わる
@@ -473,6 +485,7 @@ BattleChild* Result::update(ActionController* _aController, StringController* _s
 	BattleChild* next = this;
 
 	mTime++;
+
 	for (auto& player : players)
 	{
 		player->update();
@@ -506,7 +519,7 @@ bool Result::goField() const
 	}
 	
 	//2秒経つか，レベルアップアニメーションが終わるか
-	return mTime > 120 && goNext;
+	return (mTime > 120 && goNext) || (mGetExp == 0 && mTime > 30);
 }
 
 void Result::saveData()
