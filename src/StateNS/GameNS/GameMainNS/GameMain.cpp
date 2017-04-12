@@ -44,7 +44,6 @@ void GameMain::update(GameParent* _parent)
 
 void GameMain::draw() const
 {
-	DrawFormatString(0, 20, MyData::WHITE, "GameMain");
 	mChild->draw();
 }
 

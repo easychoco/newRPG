@@ -43,7 +43,6 @@ Main::~Main()
 
 void Main::initialize()
 {
-
 	stage = new Stage();
 	aController = new ActionController();
 	sController = new StringController();
@@ -57,7 +56,7 @@ void Main::initialize()
 	addActor();
 
 	//はじめは行動決定の場面
-	mChild = new Decide(actors);
+	mChild = new FirstAnimation(actors);
 }
 
 Child* Main::update(const GameMain* _parent)
@@ -70,10 +69,10 @@ Child* Main::update(const GameMain* _parent)
 	//背景の処理
 	stage->update();
 
-	BattleChild* nextChild = 0;
+	//BattleChild* nextChild = 0;
 
 	//バトルの処理(Stateパターン)
-	nextChild = mChild->update(aController, sController, actors);
+	BattleChild*  nextChild = mChild->update(aController, sController, actors);
 
 	//バトルのシーケンス更新
 	if (mChild != nextChild)
@@ -174,7 +173,7 @@ void Main::addActor()
 	{
 		string name = "てき" + std::to_string(i + 1);
 		Actor::Status e{ ID++, name.c_str(), true, 10, 10, 10, 10, 10, 10, 10 };
-		actors.push_back(new Enemy(e, 5));
+actors.push_back(new Enemy(e, 5));
 	}
 
 	//playersとenemies配列の作成
@@ -207,8 +206,6 @@ void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 		DrawBox(_x + 7, _y + 40 * i + 22, _x + 7 + 191 * actor->getHP() / actor->status.maxHP, _y + 40 * i + 28, MyData::GREEN, true);
 		i++;
 
-		//for Debug
-		DrawFormatString(_x, 40 * i, MyData::BLACK, "%d", actor->status.recover);
 	}
 }
 
@@ -247,6 +244,48 @@ int Main::calcStatus(int _value, int _lv) const
 //========================================================================
 
 
+
+
+
+
+
+
+
+
+//========================================================================
+// FirstAnimationクラス
+//========================================================================
+FirstAnimation::FirstAnimation(vector<Actor*> gomi)
+{
+	initialize();
+}
+
+FirstAnimation::~FirstAnimation()
+{
+
+}
+
+void FirstAnimation::initialize()
+{
+	mTime = 0;
+}
+
+//引数は使わない
+BattleChild* FirstAnimation::update(ActionController*, StringController*, vector<Actor*> _actors)
+{
+	BattleChild* next = this;
+
+	mTime++;
+	if (mTime > 60)next = new Decide(_actors);
+
+	return next;
+
+}
+
+void FirstAnimation::draw(ActionController*) const
+{
+	DrawBox(0, mTime * 8, 640, 480, MyData::BLACK, true);
+}
 
 
 

@@ -11,11 +11,6 @@ namespace GameMainNS{
 class GameMain;
 class MiddleChild;
 
-namespace BattleNS 
-{
-	class StringController;
-}
-
 class MiddleMain : public Child
 {
 public:
@@ -78,9 +73,6 @@ private:
 
 	//バトルに勝ったかどうか
 	bool win;
-
-	//メッセージ描画
-	BattleNS::StringController* sController;
 
 	//経験値とかステータス表示
 	void drawResult(int x, int y, int img) const;

@@ -78,6 +78,19 @@ public:
 	virtual bool goField() const = 0;
 };
 
+class FirstAnimation : public BattleChild
+{
+public:
+	FirstAnimation(vector<Actor*>);
+	~FirstAnimation();
+	void initialize();
+	BattleChild* update(ActionController*, StringController*, vector<Actor*>);
+	void draw(ActionController*) const;
+	bool goField() const { return false; }
+private:
+	int mTime;
+};
+
 //========================================================================
 //バトルでの行動決定場面クラス
 //Stateパターンだぜ
