@@ -5,9 +5,8 @@
 #include "BattlePlayer.h"
 #include "BattleEnemy.h"
 #include "BattleStringController.h"
-#include "..\MiddleMain.h"
+#include "..\FieldNS\FieldMain.h"
 
-#include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
 
 #include<fstream>
@@ -19,7 +18,7 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Main::Main()
+Main::Main(Vector2 _player) : mPlayerPos(_player)
 {
 	initialize();
 }
@@ -47,7 +46,6 @@ void Main::initialize()
 	aController = new ActionController();
 	sController = new StringController();
 
-	mNext = GameScene::SCENE_NONE;
 	mTime = 0;
 
 	sController->addMessage("まものがあらわれた！");
@@ -81,8 +79,8 @@ Child* Main::update(const GameMain* _parent)
 		mChild = nextChild;
 	}
 
-	if (Input_S())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
-	if (mChild->goField())next = new MiddleMain(GameScene::SCENE_FIELD, 0);
+	if (Input_S() || mChild->goField())
+		next = new FieldNS::Main(mPlayerPos);
 
 
 	return next;
@@ -115,6 +113,17 @@ void Main::addActor()
 
 	//ファイル読み込み
 	std::ifstream player_in("Data/Text/PlayerExp.txt");
+	if (!player_in)
+	{
+		using std::endl;
+		std::ofstream out("Data/Text/PlayerExp.txt");
+		out << "0 player 0" << endl;
+		out << "1 magic 0" << endl;
+		out << "2 macho 0" << endl;
+		out << "3 healer 0" << endl;
+		out.close();
+		player_in.open("Data/Text/PlayerExp.txt");
+	}
 
 	using CharacterSpec::p_spec;
 
@@ -165,6 +174,7 @@ void Main::addActor()
 	}
 
 	assert(actors.size() != 0 && "ファイルが不正です");
+	player_in.close();
 
 	//敵は1~4体
 	short ene_num = 1 + GetRand(3);
@@ -262,12 +272,24 @@ FirstAnimation::FirstAnimation(vector<Actor*> gomi)
 
 FirstAnimation::~FirstAnimation()
 {
-
+	SAFE_DELETE(mChild);
 }
 
 void FirstAnimation::initialize()
 {
 	mTime = 0;
+
+	//どのアニメーションにするかを乱数で決定
+	auto seed = GetRand(3);
+
+	switch (seed)
+	{
+	case 0:mChild = new Anime1(); break;
+	case 1:mChild = new Anime2(); break;
+	case 2:mChild = new Anime3(); break;
+	case 3:mChild = new Anime4(); break;
+	default:assert(!"不正なAnime");
+	}
 }
 
 //引数は使わない
@@ -284,10 +306,36 @@ BattleChild* FirstAnimation::update(ActionController*, StringController*, vector
 
 void FirstAnimation::draw(ActionController*) const
 {
-	DrawBox(0, mTime * 8, 640, 480, MyData::BLACK, true);
+	mChild->draw(mTime);
 }
 
+void FirstAnimation::Anime1::draw(int _time) const
+{
+	DrawBox(0, 0, 640, 480 - _time * 8, MyData::BLACK, true);
+}
 
+void FirstAnimation::Anime2::draw(int _time) const
+{
+	DrawBox(0, _time * 8, 640, 480, MyData::BLACK, true);
+}
+
+void FirstAnimation::Anime3::draw(int _time) const
+{
+	int draw_x1{ _time * 16 / 3 };//16 / 3 = 320 / 60
+	int draw_y1{ _time * 4 };
+	int draw_x2{ 640 - _time * 16 / 3 };//16 / 3 = 320 / 60
+	int draw_y2{ 480 - _time * 4 };
+	DrawBox(draw_x1, draw_y1, draw_x2, draw_y2, MyData::BLACK, true);
+}
+
+void FirstAnimation::Anime4::draw(int _time) const
+{
+	//最初は0, _timeが60で255
+	int val{ 255 * _time / 60 };
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - val);
+	DrawBox(0, 0, 640, 480, GetColor(val, val, val), true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+}
 
 
 
@@ -374,6 +422,7 @@ BattleChild* Decide::update(ActionController* _aController, StringController* _s
 		next = new Battle();
 		
 	}
+
 	return next;
 }
 
@@ -412,7 +461,6 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 		mFinTime++;
 		updateMessage(_sController, true);
 		
-		//if (mFinTime == 105)next = new Result(calcExp(_actors));
 		if (mFinTime == 105)next = new Result(180);
 	}
 	else 	//バトル中

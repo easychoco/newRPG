@@ -12,9 +12,9 @@ class Main;
 class Player
 {
 public:
-	Player();
+	Player(Vector2);
 	~Player();
-	void initialize();
+	void initialize(Vector2);
 	void update(const FieldNS::Main*);
 	void draw() const;
 	const Vector2* getVector2() const { return point; }

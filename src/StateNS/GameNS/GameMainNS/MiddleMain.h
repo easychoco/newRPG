@@ -1,7 +1,8 @@
 #pragma once
 
 #include "GameMainChild.h"
-#include "GameMain.h"
+
+//#include "GameMain.h"
 
 
 namespace StateNS {

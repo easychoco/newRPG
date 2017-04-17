@@ -42,12 +42,14 @@ Child* MiddleMain::update(const GameMain* _parent)
 	//éüÇÃèÛë‘Ç÷ëJà⁄
 	if (mChild->goNext())
 	{
+		/*
 		switch (nextScene)
 		{
 		case GameScene::SCENE_BATTLE: next = new BattleNS::Main(); break;
-		case GameScene::SCENE_FIELD: next = new FieldNS::Main(); break;
+		case GameScene::SCENE_FIELD: next = new FieldNS::Main(0, 0); break;
 		default: assert(!"ïsê≥Ç»èÛë‘ëJà⁄ MiddleMain::update()");
 		}
+		*/
 	}
 
 	return next;

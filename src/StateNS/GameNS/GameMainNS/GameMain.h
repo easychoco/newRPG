@@ -24,10 +24,12 @@ public:
 	void update(GameParent*);
 	void draw() const;
 
+	
 	struct Status {
 		int ID;
 		int h, a, b, c, d, s;
 	};
+	
 
 	std::vector<Status> players;
 

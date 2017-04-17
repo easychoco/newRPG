@@ -50,7 +50,9 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 		if (Input_UP())mCursorPos--;
 		if (Input_DOWN())mCursorPos++;
 
-		int max_num = ((mState == SELECT_MOVE) ? 4 : (int)_enemies.size());
+		int max_num = (mState == SELECT_MOVE) ? 4 : 
+			(toAction[mMove] == Action::Actions::ACT_RECOVER) ? (int)_players.size() : 
+			(int)_enemies.size();
 
 		//カーソルが範囲からはみ出さないように調整
 		mCursorPos = (mCursorPos + max_num) % max_num;
@@ -118,7 +120,7 @@ void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 	DrawFormatString(230, 200, MyData::WHITE, "こうげき");
 	DrawFormatString(230, 230, MyData::WHITE, "まほう");
 	DrawFormatString(230, 260, MyData::WHITE, "かいふく");
-	DrawFormatString(230, 290, MyData::WHITE, "にげる");//TODO -> "逃げる"の実装
+	DrawFormatString(230, 290, MyData::WHITE, "にげる");
 	DrawCircle(220, 205 + mMove * 30, 5, MyData::WHITE);
 
 	//攻撃対象決定画面
@@ -134,7 +136,7 @@ void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 		{
 			for (auto &player : _players)
 			{
-				DrawFormatString(350, 200 + 30 * i, MyData::GREEN, "%s", player->status.name.c_str());
+				DrawFormatString(350, 195 + 30 * i, MyData::GREEN, "%s", player->status.name.c_str());
 				i++;
 			}
 		}

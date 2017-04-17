@@ -3,6 +3,7 @@
 #include "..\GameMain.h"
 #include "..\..\..\..\Data.h"
 
+
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
@@ -23,7 +24,7 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main();
+	Main(Vector2);
 	~Main();
 	void initialize();
 	Child* update(const GameMain*);
@@ -35,10 +36,12 @@ private:
 	ActionController* aController;
 	StringController* sController;
 
-	GameScene mNext;
 	BattleChild* mChild;
 	int mTime;
 	int mFinTime = 0;
+	
+	//プレイヤーのフィールドでの位置
+	const Vector2 mPlayerPos;
 
 	//プレイヤーと敵が一緒に入っている配列
 	vector<Actor*> actors;
@@ -89,6 +92,49 @@ public:
 	bool goField() const { return false; }
 private:
 	int mTime;
+
+	//バトル開始時のアニメーション
+	//Strategy
+	class AnimeChild
+	{
+	public:
+		virtual ~AnimeChild() {};
+		virtual void draw(int) const = 0;
+	};
+
+	class Anime1 : public AnimeChild
+	{
+	public:
+		Anime1() {};
+		~Anime1() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime2 : public AnimeChild
+	{
+	public:
+		Anime2() {};
+		~Anime2() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime3 : public AnimeChild
+	{
+	public:
+		Anime3() {};
+		~Anime3() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime4 : public AnimeChild
+	{
+	public:
+		Anime4() {};
+		~Anime4() {};
+		void draw(int _time)  const;
+	};
+
+	AnimeChild* mChild;
 };
 
 //========================================================================

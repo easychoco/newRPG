@@ -1,7 +1,7 @@
 #include "FieldPlayer.h"
 #include "FieldMain.h"
 
-#include "..\..\..\..\Data.h"
+//#include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
 
 
@@ -11,9 +11,9 @@ namespace GameMainNS {
 namespace FieldNS {
 
 
-Player::Player()
+Player::Player(Vector2 _point)
 {
-	initialize();
+	initialize(_point);
 }
 
 Player::~Player()
@@ -21,9 +21,10 @@ Player::~Player()
 	SAFE_DELETE(point);
 }
 
-void Player::initialize()
+void Player::initialize(Vector2 _point)
 {
-	point = new Vector2{ 96000, 800000 };
+	point =  (_point.x == 0) ? new Vector2{ 96000, 800000 } : new Vector2{ _point.x, _point.y };
+
 	
 	int tmp = LoadDivGraph("Data/Image/player.png", 24, 6, 4, 32, 32, mImg);
 	assert(tmp == 0 && "player.pngì«Ç›çûÇ›ÉGÉâÅ[!");

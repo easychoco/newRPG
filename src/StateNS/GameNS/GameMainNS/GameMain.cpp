@@ -7,14 +7,14 @@
 
 #include "..\..\..\Data.h"
 #include "..\..\..\KeyInput.h"
-#include<fstream>
 
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS{
 
 
-GameMain::GameMain(){
+GameMain::GameMain()
+{
 	initialize();
 }
 
@@ -25,12 +25,11 @@ GameMain::~GameMain()
 
 void GameMain::initialize()
 {
-	mChild = new FieldNS::Main();
+	mChild = new FieldNS::Main( Vector2(0, 0) );
 }
 
 void GameMain::update(GameParent* _parent)
 {
-
 	Child* next = mChild->update(this);
 
 	//シーケンス遷移
@@ -39,7 +38,6 @@ void GameMain::update(GameParent* _parent)
 		SAFE_DELETE(mChild);
 		mChild = next;
 	}
-
 }
 
 void GameMain::draw() const

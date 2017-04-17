@@ -1,5 +1,7 @@
 #pragma once
 #include "..\GameMainChild.h"
+#include "..\..\..\..\Data.h"
+
 
 namespace StateNS {
 namespace GameNS {
@@ -19,15 +21,13 @@ class EncountAnimation;
 class Main : public Child
 {
 public:
-	Main();
+	Main(Vector2);
 	~Main();
-	void initialize();
+	void initialize(Vector2);
 	Child* update(const GameMain*);
 	void draw() const;
 	bool canPass(int, int) const;
 private:
-	//次のシーン
-	GameScene mNext;
 
 	Stage* mStage;
 	Player* mPlayer;
@@ -48,6 +48,49 @@ public:
 
 private:
 	int mTime;
+	
+
+	//バトル開始時のアニメーション
+	class AnimeChild
+	{
+	public:
+		virtual ~AnimeChild(){};
+		virtual void draw(int) const = 0;
+	};
+
+	class Anime1 : public AnimeChild
+	{
+	public:
+		Anime1() {};
+		~Anime1() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime2 : public AnimeChild
+	{
+	public:
+		Anime2() {};
+		~Anime2() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime3 : public AnimeChild
+	{
+	public:
+		Anime3() {};
+		~Anime3() {};
+		void draw(int _time)  const;
+	};
+
+	class Anime4 : public AnimeChild
+	{
+	public:
+		Anime4() {};
+		~Anime4() {};
+		void draw(int _time)  const;
+	};
+
+	AnimeChild* mChild;
 };
 
 

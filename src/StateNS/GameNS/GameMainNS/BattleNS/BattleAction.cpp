@@ -133,11 +133,12 @@ void ActionController::updateMessage(StringController* _sController, vector<Acto
 
 void ActionController::updateDamage(StringController* _sController, vector<Actor*> _actors)
 {
-	string s = _actors[actions.front()->fromID]->status.name;
+	string s = "";
 
 	//逃げるなら
 	if (actions.front()->act == Action::Actions::ACT_ESCAPE)
 	{
+		s += _actors[actions.front()->fromID]->status.name;
 		isEscape = true;
 
 		//メッセージ追加
@@ -152,6 +153,7 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	//回復なら
 	if (actions.front()->act == Action::Actions::ACT_RECOVER)
 	{
+		s += _actors[to]->status.name;
 		//回復
 		_actors[to]->recover(_actors[from]->status.recover);
 
@@ -214,6 +216,7 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	_actors[to]->damage(damage_value);
 
 	//メッセージ作成と追加
+	s += _actors[to]->status.name;
 	s += " に ";
 	s += std::to_string(damage_value);
 	s += "のダメージ!";
