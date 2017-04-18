@@ -15,12 +15,93 @@ public:
 	Enemy(Status, int);
 	~Enemy();
 	void initialize();
+	void setData(char* filename, int x, int y);
 	bool attack(StringController*, const vector<Actor*>& _players, const vector<Actor*>&);
 	void draw(vector<Actor*>, vector<Actor*>) const;
+
+private:
+	int mImg;
+
+	int draw_x;
+	int draw_y;
+
 };
 
 
+//敵の性能
+namespace EnemySpec
+{
+	//敵の種族値
+	struct Status
+	{
+		const int ID;
+		char* filename;
+		char* name;
+		int h;
+		int a;
+		int b;
+		int c;
+		int d;
+		int s;
+	};
 
+	const std::array< Status, 5> e_spec1
+	{
+		Status{ 0, "Data/Image/enemy/1_1.png", "スライム", 20, 20, 20, 20, 20, 20 },
+		Status{ 1, "Data/Image/enemy/1_2.png", "かたスライム", 20, 15, 25, 15, 25, 20 },
+		Status{ 2, "Data/Image/enemy/1_3.png", "とびとんび", 20, 25, 20, 15, 10, 30 },
+		Status{ 3, "Data/Image/enemy/1_4.png", "葉っぱの精", 30, 10, 20, 10, 30, 20 },
+		Status{ 4, "Data/Image/enemy/1_5.png", "フェアリー", 20, 20, 10, 20, 30, 20 },
+	};
+
+	const std::array< Status, 5> e_spec2
+	{
+		Status{ 0, "Data/Image/enemy/2_1.png", "アクア", 15, 5, 25, 30, 25, 20 },
+		Status{ 1, "Data/Image/enemy/2_2.png", "フレア", 20, 10, 15, 30, 15, 30 },
+		Status{ 2, "Data/Image/enemy/2_3.png", "バーム", 30, 10, 20, 30, 20, 10 },
+		Status{ 3, "Data/Image/enemy/2_4.png", "もんきぃ", 20, 40, 20, 0, 20, 20 },
+		Status{ 4, "Data/Image/enemy/2_5.png", "ぶうぅ", 20, 40, 20, 0, 20, 20 },
+	};
+
+	const std::array< Status, 5> e_spec3
+	{
+		Status{ 0, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 1, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 2, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 3, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 4, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+	};
+
+	const std::array< Status, 5> e_spec4
+	{
+		Status{ 0, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 1, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 2, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 3, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 4, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+	};
+
+	const std::array< Status, 5> e_spec5
+	{
+		Status{ 0, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 1, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 2, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 3, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+		Status{ 4, "Data/Image/enemy/", "", 20, 20, 20, 20, 20, 20 },
+	};
+
+	const std::array< std::array< Status, 5>, 5> toEneStatus
+	{
+		e_spec1,
+		e_spec2,
+		e_spec3,
+		e_spec4,
+		e_spec5,
+	};
+
+}
+
+using EnemySpec::toEneStatus;
 
 
 

@@ -25,6 +25,15 @@ void Enemy::initialize()
 	SAFE_DELETE(act);
 }
 
+void Enemy::setData(char* filename, int _x, int _y)
+{
+	mImg = LoadGraph(filename);
+	assert(mImg != -1 && "“G‰æ‘œ“Ç‚İ‚İƒGƒ‰[");
+
+	draw_x = _x;
+	draw_y = _y;
+}
+
 bool Enemy::attack(StringController* _sController, const vector<Actor*>& _enemies, const vector<Actor*>& _players)
 {
 	//—”‚Ås“®‚ğŒˆ’è
@@ -34,7 +43,7 @@ bool Enemy::attack(StringController* _sController, const vector<Actor*>& _enemie
 
 void Enemy::draw(vector<Actor*>, vector<Actor*>) const
 {
-
+	if(isAlive())DrawRotaGraph(draw_x, draw_y, 1.0, 0.0, mImg, true, false);
 }
 
 

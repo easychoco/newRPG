@@ -56,7 +56,7 @@ Child* Main::update(const GameMain* _parent)
 	if (mEAnimation)
 	{
 		//条件が満たされたらバトルへ
-		if (mEAnimation->update())next = new BattleNS::Main(*mPlayer->getVector2());
+		if (mEAnimation->update())next = new BattleNS::Main(*mPlayer->getVector2(), mStage->getEnemyLevel(mPlayer->getVector2()));
 
 
 		//キャンセルでインスタンス破壊

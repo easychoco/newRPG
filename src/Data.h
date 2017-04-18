@@ -140,31 +140,3 @@ public:
 }
 
 using MyData::Vector2;
-
-
-namespace CharacterSpec
-{
-	//次のレベルまでのexp
-	static const int nextExp = 100;
-
-	//プレイヤーの種族値
-	//ID, h, a, b, c, d, s
-	struct Status
-	{
-		const int ID;
-		int h;
-		int a;
-		int b;
-		int c;
-		int d;
-		int s;
-	};
-
-	static const std::array< Status, 4> p_spec
-	{
-		Status{ 0, 20, 20, 20, 20, 20, 20 }, //ゆうしゃ
-		Status{ 1, 15,  5, 10, 40, 20, 30 }, //まほうつかい
-		Status{ 2, 30, 30, 30, 10, 10, 10 }, //ぶとうか
-		Status{ 3, 40, 10, 20, 10, 20, 20 }, //けんじゃ
-	};
-}

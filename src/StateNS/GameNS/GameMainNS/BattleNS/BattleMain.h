@@ -24,9 +24,9 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main(Vector2);
+	Main(Vector2, int);
 	~Main();
-	void initialize();
+	void initialize(int);
 	Child* update(const GameMain*);
 	void draw() const;
 
@@ -53,7 +53,7 @@ private:
 	vector<Actor*> enemies;
 
 	//Actorの配列を作成
-	void addActor();
+	void addActor(int);
 
 	//プレイヤーのステータスを描画する
 	void drawStatus(int, int, const vector<Actor*>&) const;

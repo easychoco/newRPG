@@ -18,9 +18,9 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Main::Main(Vector2 _player) : mPlayerPos(_player)
+Main::Main(Vector2 _player, int _eneLevel) : mPlayerPos(_player)
 {
-	initialize();
+	initialize(_eneLevel);
 }
 
 Main::~Main()
@@ -40,7 +40,7 @@ Main::~Main()
 	SAFE_DELETE(mChild);
 }
 
-void Main::initialize()
+void Main::initialize(int _eneLevel)
 {
 	stage = new Stage();
 	aController = new ActionController();
@@ -51,7 +51,7 @@ void Main::initialize()
 	sController->addMessage("まものがあらわれた！");
 	
 	//バトルに参加するキャラクターの配列を作成
-	addActor();
+	addActor(_eneLevel);
 
 	//はじめは行動決定の場面
 	mChild = new FirstAnimation(actors);
@@ -94,6 +94,10 @@ void Main::draw() const
 	drawStatus(440, 330 - enemies.size() * 40, enemies);//330は(ry
 	sController->draw();
 	aController->draw();
+	for (auto e : enemies)
+	{
+		e->draw(enemies, players);
+	}
 
 	mChild->draw(aController);
 }
@@ -104,7 +108,7 @@ void Main::draw() const
 //========================================================================
 // 内部private関数
 //========================================================================
-void Main::addActor()
+void Main::addActor(int _eneLevel)
 {
 	//Actor配列の作成
 
@@ -176,14 +180,41 @@ void Main::addActor()
 	assert(actors.size() != 0 && "ファイルが不正です");
 	player_in.close();
 
+
+
+	//ここから敵
+
 	//敵は1~4体
 	short ene_num = 1 + GetRand(3);
 
 	for (int i = 0; i < ene_num; i++)
 	{
-		string name = "てき" + std::to_string(i + 1);
-		Actor::Status e{ ID++, name.c_str(), true, 10, 10, 10, 10, 10, 10, 10 };
-actors.push_back(new Enemy(e, 5));
+		int tmp_ID = GetRand(4);
+		EnemySpec::Status ene = (toEneStatus[_eneLevel - 1])[tmp_ID];
+
+		//敵のレベルは _eneLevel * 5 + 0~3
+		int ene_lv = (_eneLevel - 1) * 5 + GetRand(3);
+		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
+
+		//能力値を計算
+		h = calcHP(ene.h, ene_lv);
+		a = calcStatus(ene.a, ene_lv);
+		b = calcStatus(ene.b, ene_lv);
+		c = calcStatus(ene.c, ene_lv);
+		d = calcStatus(ene.d, ene_lv);
+		s = calcStatus(ene.s, ene_lv);
+
+		//回復量を計算
+		int r = h - abs(a - c);
+		r = max(r / 3, min(a, c));
+		
+		Actor::Status e{ ID++, ene.name, true, h, a, b, c, d, r, s,  };
+
+		Enemy* tmpEnemy = new Enemy(e, 50);
+		tmpEnemy->setName(ene.name);
+		tmpEnemy->setData(ene.filename, 640 / (ene_num + 1) * (i + 1), 100);
+
+		actors.push_back(tmpEnemy);
 	}
 
 	//playersとenemies配列の作成
@@ -461,7 +492,15 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 		mFinTime++;
 		updateMessage(_sController, true);
 		
-		if (mFinTime == 105)next = new Result(180);
+		if (mFinTime == 105)
+		{
+			int exp{ 0 };
+			for (const auto& e : _actors)
+			{
+				if (e->status.isEnemy)exp += e->getExp();
+			}
+			next = new Result(exp);
+		}
 	}
 	else 	//バトル中
 	{
@@ -606,7 +645,7 @@ bool Result::goField() const
 	}
 	
 	//2秒経つか，レベルアップアニメーションが終わるか
-	return (mTime > 120 && goNext) || (mGetExp == 0 && mTime > 30);
+	return (mTime > (mGetExp + 30)) || (mGetExp == 0 && mTime > 30);
 }
 
 void Result::saveData()
