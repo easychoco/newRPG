@@ -117,6 +117,8 @@ void Main::addActor(int _eneLevel)
 
 	//ファイル読み込み
 	std::ifstream player_in("Data/Text/PlayerExp.txt");
+
+	//ファイルがなかったら
 	if (!player_in)
 	{
 		using std::endl;
@@ -130,13 +132,14 @@ void Main::addActor(int _eneLevel)
 	}
 
 	using CharacterSpec::p_spec;
+	int p_lv{ 0 };//プレイヤ－のレベル
 
 	//一人ずつ読み込んでvectorに追加
 	while (player_in)
 	{
 		int _ID{ -10 };
 		string name{ "dummy" };
-		int exp { 0 };
+		int exp{ 0 };
 
 		player_in >> _ID >> name >> exp;
 
@@ -155,17 +158,17 @@ void Main::addActor(int _eneLevel)
 		}
 
 		//100は次のレベルまでの必要経験値
-		int lv = 1 + exp / CharacterSpec::nextExp;
-		
+		p_lv = 1 + exp / CharacterSpec::nextExp;
+
 		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
 
 		//能力値を計算
-		h = calcHP(player->h, lv);
-		a = calcStatus(player->a, lv);
-		b = calcStatus(player->b, lv);
-		c = calcStatus(player->c, lv);
-		d = calcStatus(player->d, lv);
-		s = calcStatus(player->s, lv);
+		h = calcHP(player->h, p_lv);
+		a = calcStatus(player->a, p_lv);
+		b = calcStatus(player->b, p_lv);
+		c = calcStatus(player->c, p_lv);
+		d = calcStatus(player->d, p_lv);
+		s = calcStatus(player->s, p_lv);
 
 		//回復量を計算
 		int r = h - abs(a - c);
@@ -185,7 +188,11 @@ void Main::addActor(int _eneLevel)
 	//ここから敵
 
 	//敵は1~4体
-	short ene_num = 1 + GetRand(3);
+	short ene_num{ 1 };
+
+	//プレイヤーのレベルがある程度高かったら敵が複数体出現
+	if (p_lv > _eneLevel * 5 - 2)ene_num += GetRand(3);
+
 
 	for (int i = 0; i < ene_num; i++)
 	{
@@ -210,7 +217,8 @@ void Main::addActor(int _eneLevel)
 		
 		Actor::Status e{ ID++, ene.name, true, h, a, b, c, d, r, s,  };
 
-		Enemy* tmpEnemy = new Enemy(e, 50);
+		int exp = min(300, max(10, 20 * (ene_lv - p_lv + 5)) );
+		Enemy* tmpEnemy = new Enemy(e, exp);
 		tmpEnemy->setName(ene.name);
 		tmpEnemy->setData(ene.filename, 640 / (ene_num + 1) * (i + 1), 100);
 

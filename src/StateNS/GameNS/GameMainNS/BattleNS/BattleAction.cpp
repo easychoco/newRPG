@@ -201,12 +201,12 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	//Ç±Ç§Ç∞Ç´
 	if (actions.front()->act == Action::Actions::ACT_ATTACK)
 	{
-		damage_value = _actors[from]->status.attack - _actors[to]->status.defence;
+		damage_value = _actors[from]->status.attack - _actors[to]->status.defence + _actors[from]->status.attack / 20;
 	}
 	//Ç‹ÇŸÇ§
 	else if (actions.front()->act == Action::Actions::ACT_MAGIC)
 	{
-		damage_value = _actors[from]->status.mattack - _actors[to]->status.mdefence;
+		damage_value = _actors[from]->status.mattack - _actors[to]->status.mdefence + _actors[from]->status.mattack / 20;
 	}
 
 	//É_ÉÅÅ[ÉWó ÇÕç≈è¨Ç≈1
