@@ -67,7 +67,8 @@ Child* Main::update(const GameMain* _parent)
 	//背景の処理
 	stage->update();
 
-	//BattleChild* nextChild = 0;
+	//メッセージの処理
+	sController->update();
 
 	//バトルの処理(Stateパターン)
 	BattleChild*  nextChild = mChild->update(aController, sController, actors);
@@ -174,7 +175,7 @@ void Main::addActor(int _eneLevel)
 		int r = h - abs(a - c);
 		r = max(r / 3, min(a, c));
 
-		Actor::Status status{ ID, name, false, h, a, b, c, d, r, s };
+		Actor::Status status{ ID, name, false, p_lv, h, a, b, c, d, r, s };
 		actors.push_back(new Player(status, exp));
 
 		ID++;
@@ -215,7 +216,7 @@ void Main::addActor(int _eneLevel)
 		int r = h - abs(a - c);
 		r = max(r / 3, min(a, c));
 		
-		Actor::Status e{ ID++, ene.name, true, h, a, b, c, d, r, s,  };
+		Actor::Status e{ ID++, ene.name, true, ene_lv, h, a, b, c, d, r, s,  };
 
 		int exp = min(300, max(10, 20 * (ene_lv - p_lv + 5)) );
 		Enemy* tmpEnemy = new Enemy(e, exp);

@@ -20,7 +20,6 @@ class StringController;
 class BattleChild;
 
 
-
 class Main : public Child
 {
 public:

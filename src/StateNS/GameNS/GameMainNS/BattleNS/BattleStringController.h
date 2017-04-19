@@ -3,7 +3,6 @@
 #include "..\..\..\..\Data.h"
 
 
-
 namespace StateNS {
 namespace GameNS {
 namespace GameMainNS {
@@ -23,12 +22,42 @@ public:
 
 private:
 	int mFrameImg;
+	int mUpperImg;
+	int mTime;
+	int mTimeFromLastAdd;
+	int message_dy;
 
-	//枠に表示する文字の配列
+	//枠に表示する文字のクラス
+	class FrameMessage
+	{
+	public:
+		FrameMessage(string);
+		~FrameMessage();
+		void update();
+		void draw(int x, int y) const;
+		void addNext(FrameMessage*);
+		void setEnd(bool);
+		FrameMessage* get(int);
+
+	private:
+		bool isEnd;
+		string message;
+		//FrameMessage* prev;
+		FrameMessage* next;
+	};
+
+	//FrameMessageの先頭
+	FrameMessage* beginMessage;
+
+	//frameMessageの最後尾
+	FrameMessage* endMessage;
+
+	//legacy
 	vector<string> frameMessage{};
 
+
 	//文字を書く位置, BattleFrame.pngに依存
-	array<const int, 4> frameLine{ 371, 394, 418, 442 };
+	//array<const int, 5> frameLine{ 345, 370, 395, 420, 445 };
 
 };
 

@@ -25,11 +25,12 @@ const array< Action::Actions, 4 > toAction
 class Actor
 {
 public:
-	// ID, name, isEnemy, maxHP, atk, def, matk, mdef, recover, speed
+	// ID, name, isEnemy, level, maxHP, atk, def, matk, mdef, recover, speed
 	struct Status {
 		const int ID;
 		string name;
 		const bool isEnemy;
+		int level;
 		int maxHP;
 		int attack, defence;
 		int mattack, mdefence;
