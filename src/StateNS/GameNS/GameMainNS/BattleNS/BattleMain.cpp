@@ -92,7 +92,7 @@ void Main::draw() const
 	stage->draw();
 
 	drawStatus(0, 330 - players.size() * 40, players);//330‚ÍƒƒbƒZ[ƒW˜g‚Ìã’[
-	drawStatus(440, 330 - enemies.size() * 40, enemies);//330‚Í(ry
+	//drawStatus(440, 330 - enemies.size() * 40, enemies);//330‚Í(ry
 	sController->draw();
 	aController->draw();
 	for (auto e : enemies)
@@ -240,20 +240,20 @@ void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 	//•`‰æ‚·‚é”ÍˆÍ‚Ì‰º’[
 	int bottom = _y + _actor.size() * 40;
 
-	//‚Ä‚«‚Æ‚¤‚É200
-	int right = _x + 210;
+	//‚Ä‚«‚Æ‚¤‚É260
+	int right = _x + 260;
 
 	//˜g‚ð•`‰æ
 	DrawBox(_x, _y, right, bottom, MyData::GLAY, true);
 
-	//–¼‘O‚Æ‘Ì—Í‚ð•`‰æ
+	//ƒŒƒxƒ‹‚Æ–¼‘O‚Æ‘Ì—Í‚ð•`‰æ
 	short i = 0;
 	for (auto &actor : _actor)
 	{
 		//5‚Æ‚©7‚Æ‚©‚Í—vE”÷’²®
-		DrawFormatString(_x + 10, _y + 3 + 40 * i, MyData::BLACK, "%s %d / %d", actor->status.name.c_str(), actor->getHP(), actor->status.maxHP);
-		DrawBox(_x + 5, _y + 40 * i + 20, _x + 200, _y + 40 * i + 30, MyData::WHITE, false);
-		DrawBox(_x + 7, _y + 40 * i + 22, _x + 7 + 191 * actor->getHP() / actor->status.maxHP, _y + 40 * i + 28, MyData::GREEN, true);
+		DrawFormatString(_x + 10, _y + 3 + 40 * i, MyData::BLACK, "lv.%d %s %d / %d", actor->status.level, actor->status.name.c_str(), actor->getHP(), actor->status.maxHP);
+		DrawBox(_x + 5, _y + 40 * i + 20, _x + right - 5, _y + 40 * i + 30, MyData::WHITE, false);
+		DrawBox(_x + 7, _y + 40 * i + 22, _x + 7 + (right - 14) * actor->getHP() / actor->status.maxHP, _y + 40 * i + 28, MyData::GREEN, true);
 		i++;
 
 	}

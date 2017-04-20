@@ -52,6 +52,7 @@ public:
 	virtual bool attack(StringController*, const vector<Actor*>&, const vector<Actor*>&) = 0;
 	virtual void draw(vector<Actor*>, vector<Actor*>) const = 0;
 	virtual void initialize() = 0;
+	virtual int getDrawX() = 0;
 
 	bool isAlive() const { return HP > 0; }
 	void damage(int _value) { this->HP = max(this->HP - _value, 0); }

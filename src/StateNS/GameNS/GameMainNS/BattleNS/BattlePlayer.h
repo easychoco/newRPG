@@ -16,7 +16,8 @@ public:
 	void initialize();
 	bool attack(StringController*, const vector<Actor*>& _enemies, const vector<Actor*>&);
 	void draw(vector<Actor*>, vector<Actor*>) const;
-	
+	int getDrawX() { return 0; }
+
 	bool mPrePush;
 
 private:
@@ -24,11 +25,12 @@ private:
 	{
 		SELECT_MOVE,
 		SELECT_TARGET,
-
 	};
 	SelectState mState;
 	int mMove;
-	int mImg;
+	int mPointerImg[4];
+	int mTime;
+	int eneNum;
 
 	int mCursorPos;
 	bool mFirstCome;

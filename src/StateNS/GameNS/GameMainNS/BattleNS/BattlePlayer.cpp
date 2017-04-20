@@ -26,7 +26,10 @@ void Player::initialize()
 	//actはターンごとに新しくするから,以前のものはdelete
 	SAFE_DELETE(act);
 
+	LoadDivGraph("Data/Image/pointer.png", 4, 4, 1, 32, 32, mPointerImg);
+
 	mState = SELECT_MOVE;
+	mTime = 0;
 	mMove = mCursorPos = 0;
 	mPrePush = true;
 	mFirstCome = true;
@@ -42,6 +45,8 @@ bool Player::attack(StringController* _sController, const vector<Actor*>& _enemi
 		_sController->addMessage(s_tmp);
 		mFirstCome = false;
 	}
+
+	mTime++;
 
 	//前のフレームでキーが押されていなければ
 	if (!mPrePush) {
@@ -115,19 +120,19 @@ void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 
 	//行動決定部分の描画
 	//攻撃対象決定画面でも描画される
-	DrawBox(210, 180, 320, 330, MyData::BLACK, true);
+	DrawBox(270, 180, 380, 330, MyData::BLACK, true);
 
-	DrawFormatString(230, 200, MyData::WHITE, "こうげき");
-	DrawFormatString(230, 230, MyData::WHITE, "まほう");
-	DrawFormatString(230, 260, MyData::WHITE, "かいふく");
-	DrawFormatString(230, 290, MyData::WHITE, "にげる");
-	DrawCircle(220, 205 + mMove * 30, 5, MyData::WHITE);
+	DrawFormatString(290, 200, MyData::WHITE, "こうげき");
+	DrawFormatString(290, 230, MyData::WHITE, "まほう");
+	DrawFormatString(290, 260, MyData::WHITE, "かいふく");
+	DrawFormatString(290, 290, MyData::WHITE, "にげる");
+	DrawCircle(280, 205 + mMove * 30, 5, MyData::WHITE);
 
 	//攻撃対象決定画面
 	if (mState == SELECT_TARGET)
 	{
-		DrawBox(330, 180, 420, 330, MyData::BLACK, true);
-		DrawCircle(340, 205 + 30 * mCursorPos, 5, MyData::WHITE);
+		DrawBox(390, 180, 540, 330, MyData::BLACK, true);
+		DrawCircle(400, 205 + 30 * mCursorPos, 5, MyData::WHITE);
 
 		int i = 0;
 
@@ -136,17 +141,22 @@ void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 		{
 			for (auto &player : _players)
 			{
-				DrawFormatString(350, 195 + 30 * i, MyData::GREEN, "%s", player->status.name.c_str());
+				DrawFormatString(410, 195 + 30 * i, MyData::GREEN, "%s", player->status.name.c_str());
 				i++;
 			}
 		}
 		else
 		{
+			//敵なら
 			for (auto &enemy : _enemies)
 			{
-				DrawFormatString(350, 200 + 30 * i, MyData::RED, "%s", enemy->status.name.c_str());
+				DrawFormatString(410, 200 + 30 * i, MyData::RED, "%s", enemy->status.name.c_str());
 				i++;
 			}
+
+			//カーソル描画
+			DrawRotaGraph(_enemies[mCursorPos]->getDrawX(), 20 + (mTime / 5 % 5), 1.0, 0.0, mPointerImg[mTime / 3 % 4], true);
+
 		}
 	}
 

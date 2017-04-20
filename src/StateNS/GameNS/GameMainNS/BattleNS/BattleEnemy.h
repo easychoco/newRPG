@@ -18,6 +18,7 @@ public:
 	void setData(char* filename, int x, int y);
 	bool attack(StringController*, const vector<Actor*>& _players, const vector<Actor*>&);
 	void draw(vector<Actor*>, vector<Actor*>) const;
+	int getDrawX() { return draw_x; }
 
 private:
 	int mImg;
