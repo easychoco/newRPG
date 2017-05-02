@@ -36,8 +36,8 @@ void Enemy::setData(char* filename, int _x, int _y)
 
 bool Enemy::attack(StringController* _sController, const vector<Actor*>& _enemies, const vector<Actor*>& _players)
 {
-	//乱数で行動を決定
-	act = new Action(status.ID, GetRand(0), Action::Actions::ACT_ATTACK);
+	//攻撃方法は自分のパラメータ依存で決定
+	act = new Action(status.ID, GetRand(_players.size() - 1), decideAttack());
 	return true;
 }
 
@@ -50,7 +50,21 @@ void Enemy::draw(vector<Actor*>, vector<Actor*>) const
 //========================================================================
 // 内部private関数
 //========================================================================
+Action::Actions Enemy::decideAttack()
+{
+	Action::Actions ret = Action::Actions::ACT_NONE;
 
+	int a = this->status.attack;
+	int d = this->status.mattack;
+
+	int rand = GetRand(a + d);
+
+	//a / (a + d) か d / (a + d) の確率で攻撃か魔法
+	if (rand < a)ret = Action::Actions::ACT_ATTACK;
+	else ret = Action::Actions::ACT_MAGIC;
+
+	return ret;
+}
 
 
 

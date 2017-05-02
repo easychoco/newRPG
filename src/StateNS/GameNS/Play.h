@@ -17,10 +17,10 @@ public:
 	enum NextSequence
 	{
 		SEQ_TITLE,
-		SEQ_PAUSE,
-		SEQ_CONVERSE,
+//		SEQ_PAUSE,
+//		SEQ_CONVERSE,
 		SEQ_LOAD,
-		SEQ_SAVE,
+//		SEQ_SAVE,
 		SEQ_CLEAR,
 		SEQ_OVER,
 
@@ -38,6 +38,8 @@ public:
 private:
 	GameMainNS::GameMain* gameMain;
 	NextSequence mNextSeq;
+
+	Child* changeSequence();
 };
 
 

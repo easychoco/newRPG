@@ -155,7 +155,7 @@ void Player::draw(vector<Actor*> _enemies, vector<Actor*> _players) const
 			}
 
 			//ƒJ[ƒ\ƒ‹•`‰æ
-			DrawRotaGraph(_enemies[mCursorPos]->getDrawX(), 20 + (mTime / 5 % 5), 1.0, 0.0, mPointerImg[mTime / 3 % 4], true);
+			DrawRotaGraph(_enemies[mCursorPos]->getDrawX(), 20 + 2 * (mTime / 5 % 5), 1.0, 0.0, mPointerImg[mTime / 3 % 4], true);
 
 		}
 	}

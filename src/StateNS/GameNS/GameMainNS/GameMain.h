@@ -11,6 +11,9 @@ namespace GameNS {
 class Play;
 using GameParent = Play;
 
+class Converse;
+class Pause;
+
 namespace GameMainNS{
 
 class Child;
@@ -23,18 +26,18 @@ public:
 	void initialize();
 	void update(GameParent*);
 	void draw() const;
-
 	
 	struct Status {
 		int ID;
 		int h, a, b, c, d, s;
-	};
-	
+	};	
 
 	std::vector<Status> players;
 
 private:
 	Child* mChild;
+	Converse* mConverse;
+	Pause* mPause;
 };
 
 

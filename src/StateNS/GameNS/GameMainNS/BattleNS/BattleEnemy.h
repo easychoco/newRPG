@@ -26,6 +26,8 @@ private:
 	int draw_x;
 	int draw_y;
 
+	Action::Actions decideAttack();
+
 };
 
 

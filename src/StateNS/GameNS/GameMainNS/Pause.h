@@ -1,7 +1,5 @@
 #pragma once
 
-#include "GameChild.h"
-
 namespace StateNS {
 
 class Parent;
@@ -9,13 +7,13 @@ class Parent;
 namespace GameNS {
 
 
-class Converse : public Child
+class Pause
 {
 public:
-	Converse();
-	~Converse();
+	Pause();
+	~Pause();
 	void initialize();
-	Child* update(StateNS::Parent*);
+	bool update();
 	void draw() const;
 
 };

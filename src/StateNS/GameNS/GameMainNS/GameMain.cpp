@@ -1,9 +1,9 @@
 #include "GameMain.h"
 #include "..\Play.h"
 #include "FieldNS\FieldMain.h"
-#include "BattleNS\BattleMain.h"
 #include "GameMainChild.h"
-#include "MiddleMain.h"
+#include "Converse.h"
+#include "Pause.h"
 
 #include "..\..\..\Data.h"
 #include "..\..\..\KeyInput.h"
@@ -25,24 +25,42 @@ GameMain::~GameMain()
 
 void GameMain::initialize()
 {
+
 	mChild = new FieldNS::Main( Vector2(0, 0) );
+	mConverse = 0;
+	mPause = 0;
 }
 
 void GameMain::update(GameParent* _parent)
 {
-	Child* next = mChild->update(this);
+	//インスタンスのあるものをupdate
+	if (mConverse) { if (mConverse->update()) { SAFE_DELETE(mConverse); } }
 
-	//シーケンス遷移
-	if (next != mChild)
+	else if (mPause) { if (mPause->update()) { SAFE_DELETE(mPause); } }
+
+	else
 	{
-		SAFE_DELETE(mChild);
-		mChild = next;
+		Child* next = mChild->update(this);
+
+		//シーケンス遷移
+		if (next != mChild)
+		{
+			SAFE_DELETE(mChild);
+			mChild = next;
+		}
+	}
+	if (Input_S())
+	{
+		mConverse = new Converse();
 	}
 }
 
 void GameMain::draw() const
 {
 	mChild->draw();
+	if (mConverse)mConverse->draw();
+	else if (mPause)mPause->draw();
+	
 }
 
 

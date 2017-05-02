@@ -206,11 +206,11 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	//まほう
 	else if (actions.front()->act == Action::Actions::ACT_MAGIC)
 	{
-		damage_value = _actors[from]->status.mattack - _actors[to]->status.mdefence;
+		damage_value = _actors[from]->status.mattack - _actors[to]->status.mdefence + +_actors[from]->status.mattack / 20;
 	}
 
 	//ダメージ量は最小でレベルの半分の値
-	damage_value = max(damage_value, _actors[to]->status.level / 2);
+	damage_value = max(damage_value, _actors[from]->status.level / 2);
 
 	//ダメージ
 	_actors[to]->damage(damage_value);
