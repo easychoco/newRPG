@@ -16,7 +16,7 @@ public:
 	~Enemy();
 	void initialize();
 	void setData(char* filename, int x, int y);
-	bool attack(StringController*, const vector<Actor*>& _players, const vector<Actor*>&);
+	bool attack(StringController*, const vector<Actor*>& _enemies, const vector<Actor*>& _players);
 	void draw(vector<Actor*>, vector<Actor*>) const;
 	int getDrawX() { return draw_x; }
 

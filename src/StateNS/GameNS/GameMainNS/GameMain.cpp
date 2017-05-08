@@ -49,9 +49,11 @@ void GameMain::update(GameParent* _parent)
 			mChild = next;
 		}
 	}
+
+	//for Debug
 	if (Input_S())
 	{
-		mConverse = new Converse();
+		mConverse = new Converse("0");
 	}
 }
 
