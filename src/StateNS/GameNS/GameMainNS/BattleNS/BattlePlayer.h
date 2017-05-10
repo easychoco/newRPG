@@ -58,10 +58,18 @@ namespace CharacterSpec
 
 	static const std::array< Status, 4> p_spec
 	{
-		Status{ 0, 20, 20, 20, 20, 20, 20 }, //‚ä‚¤‚µ‚á
+		Status{ 0,  20, 20, 20, 20, 20, 20 }, //‚ä‚¤‚µ‚á
 		Status{ 1, 15,  5, 10, 40, 20, 30 }, //‚Ü‚Ù‚¤‚Â‚©‚¢
-		Status{ 2, 30, 30, 30, 10, 10, 10 }, //‚Ô‚Æ‚¤‚©
-		Status{ 3, 40, 10, 20, 10, 20, 20 }, //‚¯‚ñ‚¶‚á
+		Status{ 2,  30, 30, 30, 10, 10, 10 }, //‚Ô‚Æ‚¤‚©
+		Status{ 3,  40, 10, 20, 10, 20, 20 }, //‚¯‚ñ‚¶‚á
+	};
+
+	static const std::array< char*, 4> toFileName
+	{
+		"Data/Image/up_play.png",
+		"Data/Image/up_magic.png",
+		"Data/Image/up_monq.png",
+		"Data/Image/up_heal.png",
 	};
 }
 

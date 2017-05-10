@@ -10,7 +10,7 @@ namespace GameNS {
 
 namespace GaemMainNS{
 namespace BattleNS {
-	class  StringController;
+	class StringController;
 }
 }
 

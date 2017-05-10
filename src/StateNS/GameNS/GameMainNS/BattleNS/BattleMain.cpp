@@ -593,8 +593,8 @@ mGetExp(_exp)
 
 Result::~Result()
 {
-	players.clear();
-	players.shrink_to_fit();
+	ResultPlayers.clear();
+	ResultPlayers.shrink_to_fit();
 }
 
 void Result::initialize(vector<Actor*> _actors)
@@ -604,10 +604,10 @@ void Result::initialize(vector<Actor*> _actors)
 	//ResultStatusを初期化
 	for (auto& act : _actors)
 	{
-		if(!act->status.isEnemy)players.push_back(new ResultStatus(act, mGetExp));
+		if(!act->status.isEnemy)ResultPlayers.push_back(new ResultStatus(act, mGetExp));
 	}
 	
-	mImg = LoadGraph("Data/Image/player_up.png");
+	//mImg = LoadGraph("Data/Image/play_up.png");
 	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
 
 	initialized = true;
@@ -621,7 +621,7 @@ BattleChild* Result::update(ActionController* _aController, StringController* _s
 
 	mTime++;
 
-	for (auto& player : players)
+	for (auto& player : ResultPlayers)
 	{
 		player->update();
 	}
@@ -637,10 +637,10 @@ void Result::draw(ActionController* _aController) const
 	DrawFormatString(0, 60, MyData::WHITE, "Result");
 	DrawGraph(0, 0, mBackImg, true);
 	
-	if (players.size() >= 1)players[0]->draw(0, 0);
-	if (players.size() >= 2)players[1]->draw(320, 0);
-	if (players.size() >= 3)players[2]->draw(0, 240);
-	if (players.size() >= 4)players[3]->draw(320, 240);
+	if (ResultPlayers.size() >= 1)ResultPlayers[0]->draw(0, 0);
+	if (ResultPlayers.size() >= 2)ResultPlayers[1]->draw(320, 0);
+	if (ResultPlayers.size() >= 3)ResultPlayers[2]->draw(0, 240);
+	if (ResultPlayers.size() >= 4)ResultPlayers[3]->draw(320, 240);
 }
 
 //次のシーケンスに行くか
@@ -648,7 +648,7 @@ bool Result::goField() const
 {
 	bool goNext = false;
 
-	for (auto& player : players)
+	for (auto& player : ResultPlayers)
 	{
 		goNext |= player->goNext();
 	}
@@ -660,7 +660,7 @@ bool Result::goField() const
 void Result::saveData()
 {
 	std::ofstream fout("Data/Text/PLayerExp.txt");
-	for (auto& player : players)
+	for (auto& player : ResultPlayers)
 	{
 		fout << player->getSaveString() << std::endl;
 	}
@@ -673,7 +673,7 @@ void Result::saveData()
 Result::ResultStatus::ResultStatus(Actor* _actor, int _mGetExp)
 {
 	//立ち絵のロード
-	mImg = LoadGraph("Data/Image/player_up.png");
+	mImg = LoadGraph(CharacterSpec::toFileName[_actor->status.ID]);
 
 	initialize(_actor, _mGetExp);
 }
@@ -694,6 +694,8 @@ void Result::ResultStatus::initialize(Actor* _actor, int _mGetExp)
 
 	//経験値の総合計
 	mAllExp = _actor->getExp() + _mGetExp;
+
+	name = _actor->status.name;
 
 }
 
@@ -723,19 +725,23 @@ void Result::ResultStatus::draw(int _x, int _y) const
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
 	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::BLUE, true);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-	DrawGraph(_x + 130, _y, mImg, true);
+	DrawGraph(_x + 90, _y, mImg, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 200);
 
 	//経験値バーの書く場所を計算
 	int exp = mNowExp % CharacterSpec::nextExp;
 	int draw_x = 186 * (exp + 1) / CharacterSpec::nextExp;
 
+	//各キャラのレベルと名前を表示
+	string expInfo = "Lv." + std::to_string(mAllExp / 100) + " " + name;
+	DrawString(_x + 10, _y + 170, expInfo.c_str(), MyData::WHITE);
+
 	//経験値バーを描画
 	DrawBox(_x + 10, _y + 190, _x + 200, _y + 230, MyData::WHITE, false);
 	DrawBox(_x + 12, _y + 192, _x + 12 + draw_x, _y + 228, MyData::WHITE, true);
 
 	//レベルアップ!
-	if(mLevelUp)DrawFormatString(_x + 20, _y + 170, MyData::WHITE, "Level Up!");
+	if(mLevelUp)DrawFormatString(_x + 20, _y + 150, MyData::WHITE, "Level Up!");
 }
 
 string Result::ResultStatus::getSaveString()

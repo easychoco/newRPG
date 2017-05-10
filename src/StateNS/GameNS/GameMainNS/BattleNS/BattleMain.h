@@ -240,7 +240,7 @@ private:
 	int mTime;
 	const int mGetExp;
 
-	vector< ResultStatus* > players{};
+	vector< ResultStatus* > ResultPlayers{};
 
 	//外部データにセーブ
 	void saveData();

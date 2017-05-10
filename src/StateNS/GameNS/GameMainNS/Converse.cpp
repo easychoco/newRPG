@@ -9,6 +9,7 @@ namespace StateNS {
 namespace GameNS {
 
 
+
 Converse::Converse(char* textName)
 {
 	string name = "Data/Text/Converse/";
@@ -17,6 +18,7 @@ Converse::Converse(char* textName)
 
 	std::ifstream fin(name);
 	if (!fin)assert(!"Converse : file input error!");
+
 	//全文読み込み
 	while (!fin.eof())
 	{
@@ -34,7 +36,7 @@ Converse::Converse(char* textName)
 
 Converse::~Converse()
 {
-
+	SAFE_DELETE(sController);
 }
 
 void Converse::initialize()
@@ -45,7 +47,7 @@ void Converse::initialize()
 	toImage[2] = LoadGraph("Data/Image/Converse/princess.png");
 
 	bool isErr = (toImage[0] != -1) & (toImage[1] != -1) & (toImage[2] != -1);
-	assert(isErr && "画像読み込みエラー");
+	assert(isErr && "Converse : 画像読み込みエラー");
 
 	mLeftNum = 0;
 	mRightNum = 0;
@@ -59,9 +61,6 @@ void Converse::initialize()
 
 	nextText();
 
-	//for Debug
-	mLeftNum = 0;
-	mRightNum = 1;
 }
 
 bool Converse::update()
@@ -70,16 +69,17 @@ bool Converse::update()
 
 	sController->update();
 
+	bool push_Z = !mPrePush && Input_Z();
+	mPrePush = Input_Z();
+
 	//Zキーでテキスト送り
-	if (!fin && !mPrePush && Input_Z())
+	if (!fin && push_Z)
 	{
 		nextText();
 	}
 
-	mPrePush = Input_Z();
-
 	//finがtrueかつＺキーが押されていたらConverseが終わり
-	return fin && Input_Z();
+	return fin && push_Z;
 }
 
 void Converse::draw() const
@@ -96,8 +96,8 @@ void Converse::draw() const
 	//テキストを描画
 	sController->draw();
 
+	//for Debug
 	DrawFormatString(0, 30, 0, "%d %d", mAllText.size(), mNowText);
-	DrawFormatString(0, 60, 0, "%d", fin && !mPrePush && Input_Z());
 }
 
 //==============================================
@@ -105,11 +105,29 @@ void Converse::draw() const
 //==============================================
 void Converse::nextText()
 {
-	sController->addMessage(mAllText[mNowText]);
+	string text = mAllText[mNowText];
+
+	//最後の文章または規格外の文章が読み込まれたら終了
+	if (text.size() < 2)
+	{
+		fin = true;
+		return;
+	}
+
+	//会話者を設定
+	mLeftNum = (char)(text[0]) - 48;
+	mRightNum = (char)(text[1]) - 48;
+
+	//ヘッダの切り落とし
+	text.erase(text.begin(), text.begin() + 2);
+
+
+	//文章を更新
+	sController->addMessage(text);
 
 	mNowText++;
-	if (mNowText >= (int)mAllText.size())fin = true;
 }
+
 
 
 }
