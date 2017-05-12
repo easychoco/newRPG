@@ -57,7 +57,7 @@ void Main::initialize(int _eneLevel)
 	mChild = new FirstAnimation(actors);
 }
 
-Child* Main::update(const GameMain* _parent)
+Child* Main::update(GameMain* _parent)
 {
 
 	Child* next = this;

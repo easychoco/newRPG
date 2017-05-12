@@ -24,7 +24,7 @@ public:
 	Main(Vector2);
 	~Main();
 	void initialize(Vector2);
-	Child* update(const GameMain*);
+	Child* update(GameMain*);
 	void draw() const;
 	bool canPass(int, int) const;
 private:

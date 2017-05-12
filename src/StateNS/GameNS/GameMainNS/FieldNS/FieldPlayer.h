@@ -21,6 +21,31 @@ public:
 	bool isEncount() const { return mIsEncount; };
 
 private:
+	//内部クラス，パーティメンバーの処理
+	class PartyMember
+	{
+	public:
+		PartyMember(char* fileName, Vector2);
+		~PartyMember();
+		void update(const FieldNS::Main*, const Player*, const unsigned char);
+		void draw() const;
+		PartyMember* next;
+	private:
+		void initialize(char*, Vector2);
+
+		int mGraphNum;
+		int mImg[12];
+		int mTime;
+
+		Vector2* point;
+		queue<unsigned char> inputLog;
+
+		void move(const FieldNS::Main* _main, const Player*, unsigned char);
+	};
+
+	//パーティメンバーがついてくる
+	PartyMember* next;
+	
 	//座標ベクトル
 	Vector2* point;
 
@@ -36,6 +61,9 @@ private:
 	const unsigned char f_down  = 0b0100;
 	const unsigned char f_up    = 0b1000;
 
+	//キー入力のログ，仲間を動かすのに使う
+	queue<unsigned char> inputLog;
+
 	//画像の番号
 	int mGraphNum;
 
@@ -44,12 +72,13 @@ private:
 
 	int mTime;
 
+	float mSpeed;
+
 	//==================
 	// 内部private関数
 	//==================
 	//移動
 	bool move(const FieldNS::Main*);
-	bool move(float speed, const FieldNS::Main*);
 
 	//エンカウント
 	void encount();

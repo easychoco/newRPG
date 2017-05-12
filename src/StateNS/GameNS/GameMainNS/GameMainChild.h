@@ -23,7 +23,7 @@ class Child
 {
 public:
 	virtual ~Child() {};
-	virtual Child* update(const GameMain*) = 0;
+	virtual Child* update(GameMain*) = 0;
 	virtual void draw() const = 0;
 };
 

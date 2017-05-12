@@ -26,7 +26,9 @@ public:
 	void initialize();
 	void update(GameParent*);
 	void draw() const;
-	
+	void toConverse(char* fileName);
+	void toPause();
+
 	struct Status {
 		int ID;
 		int h, a, b, c, d, s;
@@ -38,6 +40,7 @@ private:
 	Child* mChild;
 	Converse* mConverse;
 	Pause* mPause;
+
 };
 
 

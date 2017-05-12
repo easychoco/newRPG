@@ -22,7 +22,10 @@ Main::Main(Vector2 _player)
 
 Main::~Main()
 {
-
+	SAFE_DELETE(mStage);
+	SAFE_DELETE(mPlayer);
+	SAFE_DELETE(mGameSystem);
+	SAFE_DELETE(mEAnimation);
 }
 
 void Main::initialize(Vector2 _player)
@@ -33,7 +36,7 @@ void Main::initialize(Vector2 _player)
 	mEAnimation = 0;
 }
 
-Child* Main::update(const GameMain* _parent)
+Child* Main::update(GameMain* _parent)
 {
 	Child* next = this;
 
@@ -61,6 +64,12 @@ Child* Main::update(const GameMain* _parent)
 
 		//キャンセルでインスタンス破壊
 		if (mEAnimation->cancelEncount())SAFE_DELETE(mEAnimation);
+	}
+
+	//for Debug
+	if (Input_S())
+	{
+		_parent->toPause();
 	}
 
 	return next;

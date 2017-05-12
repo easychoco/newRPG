@@ -50,11 +50,8 @@ void GameMain::update(GameParent* _parent)
 		}
 	}
 
-	//for Debug
-	if (Input_S())
-	{
-		mConverse = new Converse("0");
-	}
+
+
 }
 
 void GameMain::draw() const
@@ -69,8 +66,15 @@ void GameMain::draw() const
 //==============================================
 //内部プライベート関数
 //==============================================
+void GameMain::toConverse(char* fileName)
+{
+	if (!mConverse)mConverse = new Converse(fileName);
+}
 
-//そんなものはない
+void GameMain::toPause()
+{
+	if (!mPause)mPause = new Pause();
+}
 
 
 

@@ -60,7 +60,6 @@ void Converse::initialize()
 	sController = new StringController();
 
 	nextText();
-
 }
 
 bool Converse::update()

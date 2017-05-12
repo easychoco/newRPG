@@ -26,7 +26,7 @@ public:
 	Main(Vector2, int);
 	~Main();
 	void initialize(int);
-	Child* update(const GameMain*);
+	Child* update(GameMain*);
 	void draw() const;
 
 private:
