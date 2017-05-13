@@ -2,7 +2,6 @@
 #include "FieldStage.h"
 #include "FieldPlayer.h"
 #include "FieldSystem.h"
-//#include "..\MiddleMain.h"
 #include "..\BattleNS\BattleMain.h"
 
 #include "..\..\..\..\Data.h"
@@ -15,7 +14,8 @@ namespace GameNS {
 namespace GameMainNS {
 namespace FieldNS{
 
-Main::Main(Vector2 _player)
+Main::Main(Vector2 _player, array<int, 4> _party) :
+	party(_party)
 {
 	initialize(_player);
 }
@@ -38,6 +38,7 @@ void Main::initialize(Vector2 _player)
 
 Child* Main::update(GameMain* _parent)
 {
+
 	Child* next = this;
 
 	//update
@@ -59,7 +60,7 @@ Child* Main::update(GameMain* _parent)
 	if (mEAnimation)
 	{
 		//条件が満たされたらバトルへ
-		if (mEAnimation->update())next = new BattleNS::Main(*mPlayer->getVector2(), mStage->getEnemyLevel(mPlayer->getVector2()));
+		if (mEAnimation->update())next = new BattleNS::Main(*mPlayer->getVector2(), party, mStage->getEnemyLevel(mPlayer->getVector2()));
 
 
 		//キャンセルでインスタンス破壊
@@ -89,6 +90,11 @@ void Main::draw() const
 bool Main::canPass(int px, int py) const
 {
 	return mStage->canPass(px, py);
+}
+
+const array<int, 4> Main::getParty() const
+{
+	return party;
 }
 
 //====================================

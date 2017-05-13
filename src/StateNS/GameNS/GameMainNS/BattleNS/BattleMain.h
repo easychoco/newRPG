@@ -23,7 +23,7 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main(Vector2, int);
+	Main(Vector2, array<int, 4>, int);
 	~Main();
 	void initialize(int);
 	Child* update(GameMain*);
@@ -42,6 +42,9 @@ private:
 	//プレイヤーのフィールドでの位置
 	const Vector2 mPlayerPos;
 
+	//パーティメンバー
+	const array<int, 4> party;
+
 	//プレイヤーと敵が一緒に入っている配列
 	vector<Actor*> actors;
 
@@ -51,6 +54,9 @@ private:
 	//敵の配列
 	vector<Actor*> enemies;
 
+	//=======================
+	//内部private関数
+	//=======================
 	//Actorの配列を作成
 	void addActor(int);
 
@@ -220,7 +226,7 @@ private:
 
 	private:
 		//セーブ用
-		int ID;
+		int charaID;
 		std::string name;
 
 		int mTime;
@@ -232,6 +238,9 @@ private:
 
 		bool mLevelUp;
 		int mLevelTime;
+
+		//toCharacter.fileNameから画像の名前を生成
+		const string getFileName(char*) const;
 	};
 
 	bool initialized;
@@ -241,6 +250,8 @@ private:
 	const int mGetExp;
 
 	vector< ResultStatus* > ResultPlayers{};
+
+
 
 	//外部データにセーブ
 	void saveData();

@@ -7,6 +7,7 @@
 
 namespace StateNS {
 namespace GameNS {
+namespace GameMainNS{
 
 
 
@@ -131,4 +132,4 @@ void Converse::nextText()
 
 }
 }
-
+}

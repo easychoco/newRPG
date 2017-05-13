@@ -32,6 +32,7 @@ private:
 
 
 //“G‚Ì«”\
+//DB‚É‘‚­‚×‚«“à—e
 namespace EnemySpec
 {
 	//“G‚Ìí‘°’l

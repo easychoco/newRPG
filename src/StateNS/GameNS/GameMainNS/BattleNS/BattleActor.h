@@ -28,6 +28,7 @@ public:
 	// ID, name, isEnemy, level, maxHP, atk, def, matk, mdef, recover, speed
 	struct Status {
 		const int ID;
+		const int charaID;
 		string name;
 		const bool isEnemy;
 		int level;

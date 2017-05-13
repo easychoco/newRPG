@@ -21,12 +21,13 @@ class EncountAnimation;
 class Main : public Child
 {
 public:
-	Main(Vector2);
+	Main(Vector2, array<int, 4>);
 	~Main();
 	void initialize(Vector2);
 	Child* update(GameMain*);
 	void draw() const;
 	bool canPass(int, int) const;
+	const array<int, 4> getParty() const;
 private:
 
 	Stage* mStage;
@@ -34,6 +35,7 @@ private:
 	GameSystem* mGameSystem;
 	EncountAnimation* mEAnimation;
 
+	const array<int, 4> party;
 };
 
 class EncountAnimation

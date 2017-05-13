@@ -25,13 +25,13 @@ private:
 	class PartyMember
 	{
 	public:
-		PartyMember(char* fileName, Vector2);
+		PartyMember(string fileName, Vector2);
 		~PartyMember();
 		void update(const FieldNS::Main*, const Player*, const unsigned char);
-		void draw() const;
+		void draw(int py) const;
 		PartyMember* next;
 	private:
-		void initialize(char*, Vector2);
+		void initialize(string, Vector2);
 
 		int mGraphNum;
 		int mImg[12];
@@ -43,8 +43,11 @@ private:
 		void move(const FieldNS::Main* _main, const Player*, unsigned char);
 	};
 
-	//パーティメンバーがついてくる
+	//パーティメンバーへのポインタ
 	PartyMember* next;
+
+	//パーティメンバーを初期化したかどうか
+	bool partyInitialized;
 	
 	//座標ベクトル
 	Vector2* point;
@@ -77,11 +80,18 @@ private:
 	//==================
 	// 内部private関数
 	//==================
+	//パーティメンバーを初期化
+	void initializeParty(const array<int, 4>);
+
+	//toCharacter.fileNameから画像の名前を生成
+	const string getFileName(char*) const;
+
 	//移動
 	bool move(const FieldNS::Main*);
 
 	//エンカウント
 	void encount();
+
 };
 
 

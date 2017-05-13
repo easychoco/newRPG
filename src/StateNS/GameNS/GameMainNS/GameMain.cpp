@@ -21,12 +21,14 @@ GameMain::GameMain()
 GameMain::~GameMain()
 {
 	SAFE_DELETE(mChild);
+	SAFE_DELETE(mConverse);
+	SAFE_DELETE(mPause);
 }
 
 void GameMain::initialize()
 {
 
-	mChild = new FieldNS::Main( Vector2(0, 0) );
+	mChild = new FieldNS::Main( Vector2(0, 0), party );
 	mConverse = 0;
 	mPause = 0;
 }
@@ -36,7 +38,7 @@ void GameMain::update(GameParent* _parent)
 	//インスタンスのあるものをupdate
 	if (mConverse) { if (mConverse->update()) { SAFE_DELETE(mConverse); } }
 
-	else if (mPause) { if (mPause->update()) { SAFE_DELETE(mPause); } }
+	else if (mPause) { if (mPause->update(this)) { SAFE_DELETE(mPause); } }
 
 	else
 	{
@@ -62,10 +64,6 @@ void GameMain::draw() const
 	
 }
 
-
-//==============================================
-//内部プライベート関数
-//==============================================
 void GameMain::toConverse(char* fileName)
 {
 	if (!mConverse)mConverse = new Converse(fileName);
@@ -73,9 +71,19 @@ void GameMain::toConverse(char* fileName)
 
 void GameMain::toPause()
 {
-	if (!mPause)mPause = new Pause();
+	if (!mPause)mPause = new Pause(this->party);
 }
 
+void GameMain::setParty(std::array<int, 4> _party)
+{
+	this->party = _party;
+}
+
+//==============================================
+//内部プライベート関数
+//==============================================
+
+//そんなものはない
 
 
 }

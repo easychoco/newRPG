@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
 #include <vector>
-
+#include <array>
 
 
 namespace StateNS {
@@ -11,12 +10,13 @@ namespace GameNS {
 class Play;
 using GameParent = Play;
 
-class Converse;
-class Pause;
-
 namespace GameMainNS{
 
+
 class Child;
+
+class Converse;
+class Pause;
 
 class GameMain
 {
@@ -28,7 +28,9 @@ public:
 	void draw() const;
 	void toConverse(char* fileName);
 	void toPause();
-
+	std::array<int, 4> getParty() const { return party; }
+	void setParty(std::array<int, 4>);
+	
 	struct Status {
 		int ID;
 		int h, a, b, c, d, s;
@@ -41,6 +43,8 @@ private:
 	Converse* mConverse;
 	Pause* mPause;
 
+	//パーティメンバー 中はIDを記憶
+	std::array<int, 4> party{ 0, 1, 2, 4 };
 };
 
 

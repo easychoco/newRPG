@@ -1,7 +1,7 @@
 #include "FieldPlayer.h"
 #include "FieldMain.h"
+#include "..\CharacterData.h"
 
-//#include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
 
 
@@ -21,30 +21,35 @@ Player::~Player()
 	SAFE_DELETE(point);
 	while(!inputLog.empty())inputLog.pop();
 	SAFE_DELETE(next);
+	for(int i = 0; i < 24; i++)DeleteGraph(mImg[i]);
 }
 
 void Player::initialize(Vector2 _point)
 {
 	point =  (_point.x == 0) ? new Vector2{ 96000, 800000 } : new Vector2{ _point.x, _point.y };
 
-	
-	int tmp = LoadDivGraph("Data/Image/move_player.png", 24, 6, 4, 32, 32, mImg);
+	int tmp = LoadDivGraph(getFileName(toCharacter[0].fileName).c_str(), 24, 6, 4, 32, 32, mImg);
 	assert(tmp == 0 && "move_player.png読み込みエラー!");
 
 	mTime = 0;
 	mIsEncount = false;
 	mGraphNum = 0;
-	mSpeed = 5.0f;
+	mSpeed = 6.0f;
 
-	//パーティメンバーを初期化
-	next = new PartyMember("Data/Image/move_magic.png", *(this->point));
-	next->next = new PartyMember("Data/Image/move_monq.png", *(this->point));
-	next->next->next = new PartyMember("Data/Image/move_heal.png", *(this->point));
+	next = NULL;
+	partyInitialized = false;
 
 }
 
 void Player::update(const FieldNS::Main* _main)
 {
+	if (!partyInitialized)
+	{
+		initializeParty(_main->getParty());
+		partyInitialized = true;
+
+	}
+
 	mIsEncount = false;
 
 	mTime++;
@@ -55,8 +60,8 @@ void Player::update(const FieldNS::Main* _main)
 		//エンカウント処理
 		encount();
 
-		//5フレーム遅れて行動
-		if (inputLog.size() > 5)
+		//数フレーム遅れて行動
+		if (inputLog.size() > (unsigned)(32 / this->mSpeed))
 		{
 			//パーティメンバーを更新
 			next->update(_main, this, inputLog.front());
@@ -68,7 +73,7 @@ void Player::update(const FieldNS::Main* _main)
 void Player::draw() const
 {
 	//パーティメンバー描画
-	next->draw();
+	if(next)next->draw(point->y);
 
 	//自機描画
 
@@ -86,13 +91,30 @@ void Player::draw() const
 	//どちらでもないなら
 	else
 		DrawRotaGraph(draw_x, MyData::CY, 1.0, 0.0, mImg[mGraphNum], true);
-
 }
 
 //========================================================================
 // 内部private関数
 //========================================================================
-//移動速度可変版
+//パーティメンバーを初期化
+void Player::initializeParty(const array<int, 4> _party)
+{
+	next = new PartyMember(getFileName(toCharacter[_party[1]].fileName), *(this->point));
+	next->next = new PartyMember(getFileName(toCharacter[_party[2]].fileName), *(this->point));
+	next->next->next = new PartyMember(getFileName(toCharacter[_party[3]].fileName), *(this->point));
+}
+
+//toCharacter.fileNameから画像の名前を生成
+const string Player::getFileName(char* _fileName) const
+{
+	string fileName = "Data/Image/move_";
+	fileName += _fileName;
+	fileName += ".png";
+
+	return fileName;
+}
+
+//移動
 bool Player::move(const FieldNS::Main* _main)
 {
 	//bitmask用のフラグ
@@ -252,9 +274,10 @@ void Player::encount()
 		mIsEncount = true;
 		encountTimer = 0;
 	}
-
-
 }
+
+
+
 
 
 
@@ -266,7 +289,7 @@ void Player::encount()
 //============================================================================================
 // 内部クラス(PartyMember)
 //============================================================================================
-Player::PartyMember::PartyMember(char* _fileName, Vector2 _point)
+Player::PartyMember::PartyMember(string _fileName, Vector2 _point)
 {
 	this->initialize(_fileName, _point);
 }
@@ -276,11 +299,13 @@ Player::PartyMember::~PartyMember()
 	SAFE_DELETE(point)
 	while (!this->inputLog.empty())this->inputLog.pop();
 	if(this->next)SAFE_DELETE(this->next);
+	for (int i = 0; i < 12; i++)DeleteGraph(mImg[i]);
+
 }
 
-void Player::PartyMember::initialize(char* _fileName, Vector2 _point)
+void Player::PartyMember::initialize(string _fileName, Vector2 _point)
 {
-	int tmp = LoadDivGraph(_fileName, 12, 3, 4, 32, 32, this->mImg);
+	int tmp = LoadDivGraph(_fileName.c_str(), 12, 3, 4, 32, 32, this->mImg);
 	assert(tmp == 0 && "パーティ画像読み込みエラー!");
 
 	this->next = NULL;
@@ -295,8 +320,8 @@ void Player::PartyMember::update(const FieldNS::Main* _main, const Player* _play
 
 	move(_main, _player, _fDirection);
 
-	//5フレーム遅れて行動
-	if (this->inputLog.size() > 5)
+	//数フレーム遅れて行動
+	if (this->inputLog.size() > (unsigned)(32 / _player->mSpeed))
 	{
 		//パーティメンバーを更新
 		if(next)next->update(_main, _player, this->inputLog.front());
@@ -306,9 +331,10 @@ void Player::PartyMember::update(const FieldNS::Main* _main, const Player* _play
 
 }
 
-void Player::PartyMember::draw() const
+void Player::PartyMember::draw(int _py) const
 {
-	if (next)next->draw();
+	//後ろについてくるメンバーを描画
+	if (next)next->draw(_py);
 
 	//自機描画
 
@@ -316,16 +342,19 @@ void Player::PartyMember::draw() const
 	int draw_x = (this->point->x / MyData::vectorRate) % (MyData::MAP_WIDTH / 2 + 1);
 
 	//上端にいるなら
-	if (point->y < MyData::CY * MyData::vectorRate)
-		DrawRotaGraph(draw_x, this->point->y / MyData::vectorRate, 1.0, 0.0, mImg[mGraphNum], true);
+	if (_py < MyData::CY * MyData::vectorRate)
+		DrawRotaGraph(draw_x, this->point->y / MyData::vectorRate, 1.0, 0.0, this->mImg[mGraphNum], true);
 
 	//下端にいるなら
-	else if (point->y >(MyData::MAP_HEIGHT - MyData::CY) * MyData::vectorRate)
-		DrawRotaGraph(draw_x, this->point->y / MyData::vectorRate - MyData::MAP_HEIGHT + 480, 1.0, 0.0, mImg[mGraphNum], true);
+	else if (_py >(MyData::MAP_HEIGHT - MyData::CY) * MyData::vectorRate)
+		DrawRotaGraph(draw_x, this->point->y / MyData::vectorRate - MyData::MAP_HEIGHT + 480, 1.0, 0.0, this->mImg[mGraphNum], true);
 
 	//どちらでもないなら
 	else
-		DrawRotaGraph(draw_x, MyData::CY, 1.0, 0.0, mImg[mGraphNum], true);
+	{
+		int draw_y = MyData::CY + (this->point->y - _py) / MyData::vectorRate;
+		DrawRotaGraph(draw_x, draw_y, 1.0, 0.0, mImg[mGraphNum], true);
+	}
 }
 
 

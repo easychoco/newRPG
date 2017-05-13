@@ -32,8 +32,7 @@ using std::vector;
 }
 
 //========================================
-//円周率の計算(コンパイル時計算)
-//zero divisionは回避していないから注意
+//円周率の計算(コンパイル時計算) pi * num を返す
 //========================================
 constexpr float pi(float num)
 {
@@ -67,6 +66,9 @@ const unsigned WHITE = GetColor(255, 255, 255);
 const unsigned RED = GetColor(255, 0, 0);
 const unsigned GREEN = GetColor(0, 255, 0);
 const unsigned BLUE = GetColor(0, 0, 255);
+const unsigned YELLOW = GetColor(255, 255, 0);
+const unsigned VIOLET = GetColor(255, 0, 255);
+const unsigned CIAN = GetColor(0, 255, 255);
 
 
 

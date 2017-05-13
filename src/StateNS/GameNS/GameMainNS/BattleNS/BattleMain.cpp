@@ -6,6 +6,7 @@
 #include "BattleEnemy.h"
 #include "BattleStringController.h"
 #include "..\FieldNS\FieldMain.h"
+#include "..\CharacterData.h"
 
 #include "..\..\..\..\KeyInput.h"
 
@@ -18,7 +19,9 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Main::Main(Vector2 _player, int _eneLevel) : mPlayerPos(_player)
+Main::Main(Vector2 _player, array<int, 4> _party, int _eneLevel) : 
+	mPlayerPos(_player),
+	party(_party)
 {
 	initialize(_eneLevel);
 }
@@ -81,7 +84,7 @@ Child* Main::update(GameMain* _parent)
 	}
 
 	if (Input_S() || mChild->goField())
-		next = new FieldNS::Main(mPlayerPos);
+		next = new FieldNS::Main(mPlayerPos, party);
 
 
 	return next;
@@ -114,7 +117,7 @@ void Main::addActor(int _eneLevel)
 	//Actor配列の作成
 
 	//playerとenemy通しで使うID
-	int ID{ 0 };
+	int battleID{ 0 };
 
 	//ファイル読み込み
 	std::ifstream player_in("Data/Text/PlayerExp.txt");
@@ -124,15 +127,14 @@ void Main::addActor(int _eneLevel)
 	{
 		using std::endl;
 		std::ofstream out("Data/Text/PlayerExp.txt");
-		out << "0 player 0" << endl;
-		out << "1 magic 0" << endl;
-		out << "2 macho 0" << endl;
-		out << "3 healer 0" << endl;
+		out << "0 ゆうしゃ 0" << endl;
+		out << "1 まほうつかい 0" << endl;
+		out << "2 かくとうか 0" << endl;
+		out << "3 けんじゃ 0" << endl;
 		out.close();
 		player_in.open("Data/Text/PlayerExp.txt");
 	}
 
-	using CharacterSpec::p_spec;
 	int p_lv{ 0 };//プレイヤ－のレベル
 
 	//一人ずつ読み込んでvectorに追加
@@ -148,10 +150,10 @@ void Main::addActor(int _eneLevel)
 		if (player_in.eof())break;
 
 		//IDが一致するキャラを探索
-		auto player = std::find_if(p_spec.begin(), p_spec.end(),
+		auto player = std::find_if(toCharacter.begin(), toCharacter.end(),
 			[_ID](auto &spec) { return (spec.ID == _ID); });
 
-		if (player == p_spec.end())
+		if (player == toCharacter.end())
 		{
 			//対象のキャラクターがいなかったら終了
 			assert(!"ファイルが不正です");
@@ -159,26 +161,26 @@ void Main::addActor(int _eneLevel)
 		}
 
 		//100は次のレベルまでの必要経験値
-		p_lv = 1 + exp / CharacterSpec::nextExp;
+		p_lv = 1 + exp / CharacterData::nextExp;
 
 		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
 
 		//能力値を計算
-		h = calcHP(player->h, p_lv);
-		a = calcStatus(player->a, p_lv);
-		b = calcStatus(player->b, p_lv);
-		c = calcStatus(player->c, p_lv);
-		d = calcStatus(player->d, p_lv);
-		s = calcStatus(player->s, p_lv);
+		h = calcHP(player->s.h, p_lv);
+		a = calcStatus(player->s.a, p_lv);
+		b = calcStatus(player->s.b, p_lv);
+		c = calcStatus(player->s.c, p_lv);
+		d = calcStatus(player->s.d, p_lv);
+		s = calcStatus(player->s.s, p_lv);
 
 		//回復量を計算
 		int r = h - abs(a - c);
 		r = max(r / 3, min(a, c));
 
-		Actor::Status status{ ID, name, false, p_lv, h, a, b, c, d, r, s };
+		Actor::Status status{ battleID, _ID, name, false, p_lv, h, a, b, c, d, r, s };
 		actors.push_back(new Player(status, exp));
 
-		ID++;
+		battleID++;
 	}
 
 	assert(actors.size() != 0 && "ファイルが不正です");
@@ -216,7 +218,7 @@ void Main::addActor(int _eneLevel)
 		int r = h - abs(a - c);
 		r = max(r / 3, min(a, c));
 		
-		Actor::Status e{ ID++, ene.name, true, ene_lv, h, a, b, c, d, r, s,  };
+		Actor::Status e{ battleID++, 0, ene.name, true, ene_lv, h, a, b, c, d, r, s,  };
 
 		int exp = min(300, max(10, 20 * (ene_lv - p_lv + 5)) );
 		Enemy* tmpEnemy = new Enemy(e, exp);
@@ -673,21 +675,21 @@ void Result::saveData()
 Result::ResultStatus::ResultStatus(Actor* _actor, int _mGetExp)
 {
 	//立ち絵のロード
-	mImg = LoadGraph(CharacterSpec::toFileName[_actor->status.ID]);
+	mImg = LoadGraph(getFileName(toCharacter[_actor->status.charaID].fileName).c_str());
 
 	initialize(_actor, _mGetExp);
 }
 
 void Result::ResultStatus::initialize(Actor* _actor, int _mGetExp)
 {
-	ID = _actor->status.ID;
+	charaID = _actor->status.charaID;
 	name = _actor->status.name;
 
 	mLevelUp = false;
 	mLevelTime = 60;
 
 	//今の経験値バーの位置
-	mNowExp = _actor->getExp() % CharacterSpec::nextExp;
+	mNowExp = _actor->getExp() % CharacterData::nextExp;
 
 	//目標の経験値バーの位置
 	mAfterExp = mNowExp + _mGetExp;
@@ -707,7 +709,7 @@ void Result::ResultStatus::update()
 	mNowExp = min(mNowExp + 1, mAfterExp);
 
 	//経験値がいっぱいになったらレベルアップ
-	if (mNowExp % CharacterSpec::nextExp == (CharacterSpec::nextExp - 1) &&
+	if (mNowExp % CharacterData::nextExp == (CharacterData::nextExp - 1) &&
 		mNowExp != mAfterExp)
 	{
 		mLevelUp = true;
@@ -724,16 +726,16 @@ void Result::ResultStatus::draw(int _x, int _y) const
 	//背景と立ち絵を描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
 	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::BLUE, true);
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 230);
 	DrawGraph(_x + 90, _y, mImg, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 200);
 
 	//経験値バーの書く場所を計算
-	int exp = mNowExp % CharacterSpec::nextExp;
-	int draw_x = 186 * (exp + 1) / CharacterSpec::nextExp;
+	int exp = mNowExp % CharacterData::nextExp;
+	int draw_x = 186 * (exp + 1) / CharacterData::nextExp;
 
 	//各キャラのレベルと名前を表示
-	string expInfo = "Lv." + std::to_string(mAllExp / 100) + " " + name;
+	string expInfo = "Lv." + std::to_string(1 + (mAllExp -mAfterExp + mNowExp) / 100) + " " + name;
 	DrawString(_x + 10, _y + 170, expInfo.c_str(), MyData::WHITE);
 
 	//経験値バーを描画
@@ -746,13 +748,23 @@ void Result::ResultStatus::draw(int _x, int _y) const
 
 string Result::ResultStatus::getSaveString()
 {
-	return std::to_string(ID) + " " + name + " " + std::to_string(mAllExp);
+	return std::to_string(charaID) + " " + name + " " + std::to_string(mAllExp);
 }
 
 bool Result::ResultStatus::goNext() const
 {
 	//レベルアップから2秒後にreturn
 	return mTime > 120;
+}
+
+//toCharacter.fileNameから画像の名前を生成
+const string Result::ResultStatus::getFileName(char* _fileName) const
+{
+	string fileName = "Data/Image/up_";
+	fileName += _fileName;
+	fileName += ".png";
+
+	return fileName;
 }
 
 

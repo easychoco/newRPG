@@ -3,18 +3,14 @@
 #include "BattleNS\BattleStringController.h"
 
 namespace StateNS {
-
-class Parent;
-
 namespace GameNS {
+namespace GameMainNS{
 
-namespace GaemMainNS{
 namespace BattleNS {
 	class StringController;
 }
-}
 
-using GameMainNS::BattleNS::StringController;
+using BattleNS::StringController;
 
 class Converse
 {
@@ -44,6 +40,6 @@ private:
 
 
 
-
+}
 }
 }
