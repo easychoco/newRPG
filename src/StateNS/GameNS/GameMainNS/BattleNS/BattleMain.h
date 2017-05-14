@@ -28,6 +28,7 @@ public:
 	void initialize(int);
 	Child* update(GameMain*);
 	void draw() const;
+	void loadParty() {};
 
 private:
 	Stage* stage;
@@ -84,6 +85,7 @@ public:
 	virtual BattleChild* update(ActionController*, StringController*, vector<Actor*>) = 0;
 	virtual void draw(ActionController*) const = 0;
 	virtual bool goField() const = 0;
+	static int mBGM;
 };
 
 class FirstAnimation : public BattleChild

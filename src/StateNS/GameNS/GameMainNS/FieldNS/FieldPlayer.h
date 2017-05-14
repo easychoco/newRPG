@@ -19,6 +19,7 @@ public:
 	void draw() const;
 	const Vector2* getVector2() const { return point; }
 	bool isEncount() const { return mIsEncount; };
+	void loadParty() { partyInitialized = false; };
 
 private:
 	//内部クラス，パーティメンバーの処理
@@ -28,7 +29,7 @@ private:
 		PartyMember(string fileName, Vector2);
 		~PartyMember();
 		void update(const FieldNS::Main*, const Player*, const unsigned char);
-		void draw(int py) const;
+		void draw(int px, int py) const;
 		PartyMember* next;
 	private:
 		void initialize(string, Vector2);

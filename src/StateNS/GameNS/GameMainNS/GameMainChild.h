@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-
+#include <array>
 
 namespace StateNS {
 namespace GameNS {
@@ -25,6 +25,7 @@ public:
 	virtual ~Child() {};
 	virtual Child* update(GameMain*) = 0;
 	virtual void draw() const = 0;
+	virtual void loadParty() = 0;
 };
 
 

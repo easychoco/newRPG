@@ -79,8 +79,7 @@ public:
 	int x;
 	int y;
 
-	Vector2() :
-		Vector2(0, 0)
+	Vector2() : Vector2(0, 0)
 	{
 
 	}
@@ -129,7 +128,6 @@ public:
 		return !(*this == other);
 	}
 
-	
 	static const Vector2 ZERO;
 	static const Vector2 LEFT;
 	static const Vector2 RIGHT;

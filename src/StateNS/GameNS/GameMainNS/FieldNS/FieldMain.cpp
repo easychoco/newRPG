@@ -2,10 +2,14 @@
 #include "FieldStage.h"
 #include "FieldPlayer.h"
 #include "FieldSystem.h"
+#include "FieldNPC.h"
 #include "..\BattleNS\BattleMain.h"
+
 
 #include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
+
+#include <fstream>
 
 
 
@@ -14,8 +18,7 @@ namespace GameNS {
 namespace GameMainNS {
 namespace FieldNS{
 
-Main::Main(Vector2 _player, array<int, 4> _party) :
-	party(_party)
+Main::Main(Vector2 _player)
 {
 	initialize(_player);
 }
@@ -26,6 +29,8 @@ Main::~Main()
 	SAFE_DELETE(mPlayer);
 	SAFE_DELETE(mGameSystem);
 	SAFE_DELETE(mEAnimation);
+
+	DeleteSoundMem(mBGM);
 }
 
 void Main::initialize(Vector2 _player)
@@ -34,6 +39,17 @@ void Main::initialize(Vector2 _player)
 	mPlayer = new  Player(_player);
 	mGameSystem = new GameSystem();
 	mEAnimation = 0;
+
+	mBGM = LoadSoundMem("Data/Sound/field1.mp3");
+	PlaySoundMem(mBGM, DX_PLAYTYPE_LOOP);
+
+	std::ifstream fin("Data/Text/PlayerData.txt");
+	std::string gomi;
+	for (auto& p : party)
+	{
+		fin >> p;
+		fin >> gomi >> gomi;
+	}
 }
 
 Child* Main::update(GameMain* _parent)
@@ -90,6 +106,18 @@ void Main::draw() const
 bool Main::canPass(int px, int py) const
 {
 	return mStage->canPass(px, py);
+}
+
+void Main::loadParty()
+{
+	std::ifstream fin("Data/Text/PlayerData.txt");
+	std::string gomi;
+	for (auto& p : party)
+	{
+		fin >> p;
+		fin >> gomi >> gomi;
+	}
+	mPlayer->loadParty();
 }
 
 const array<int, 4> Main::getParty() const

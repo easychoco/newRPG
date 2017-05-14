@@ -27,18 +27,33 @@ GameMain::~GameMain()
 
 void GameMain::initialize()
 {
-
-	mChild = new FieldNS::Main( Vector2(0, 0), party );
+	mChild = new FieldNS::Main(Vector2(0, 0));
 	mConverse = 0;
 	mPause = 0;
+	partyChanged = false;
 }
 
 void GameMain::update(GameParent* _parent)
 {
 	//インスタンスのあるものをupdate
-	if (mConverse) { if (mConverse->update()) { SAFE_DELETE(mConverse); } }
+	if (mConverse) 
+	{
+		if (mConverse->update()) 
+		{
+			SAFE_DELETE(mConverse); 
+		}
+	}
 
-	else if (mPause) { if (mPause->update(this)) { SAFE_DELETE(mPause); } }
+	else if (mPause) 
+	{
+		if (mPause->update(this)) 
+		{
+			//Fieldに戻る時点でパーティ変更
+			SAFE_DELETE(mPause);
+			if(partyChanged)mChild->loadParty();
+			partyChanged = false;
+		} 
+	}
 
 	else
 	{
@@ -51,9 +66,6 @@ void GameMain::update(GameParent* _parent)
 			mChild = next;
 		}
 	}
-
-
-
 }
 
 void GameMain::draw() const
@@ -71,12 +83,12 @@ void GameMain::toConverse(char* fileName)
 
 void GameMain::toPause()
 {
-	if (!mPause)mPause = new Pause(this->party);
+	if (!mPause)mPause = new Pause();
 }
 
-void GameMain::setParty(std::array<int, 4> _party)
+void GameMain::changeParty()
 {
-	this->party = _party;
+	partyChanged = true;
 }
 
 //==============================================

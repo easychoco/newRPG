@@ -28,8 +28,7 @@ public:
 	void draw() const;
 	void toConverse(char* fileName);
 	void toPause();
-	std::array<int, 4> getParty() const { return party; }
-	void setParty(std::array<int, 4>);
+	void changeParty();
 	
 	struct Status {
 		int ID;
@@ -43,8 +42,8 @@ private:
 	Converse* mConverse;
 	Pause* mPause;
 
-	//パーティメンバー 中はIDを記憶
-	std::array<int, 4> party{ 0, 1, 2, 4 };
+	bool partyChanged;
+
 };
 
 

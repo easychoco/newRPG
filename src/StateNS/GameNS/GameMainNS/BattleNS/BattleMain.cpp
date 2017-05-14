@@ -18,6 +18,9 @@ namespace GameNS {
 namespace GameMainNS {
 namespace BattleNS {
 
+//戦闘BGM
+int BattleChild::mBGM;
+
 
 Main::Main(Vector2 _player, array<int, 4> _party, int _eneLevel) : 
 	mPlayerPos(_player),
@@ -41,6 +44,7 @@ Main::~Main()
 	SAFE_DELETE(aController);
 	SAFE_DELETE(sController);
 	SAFE_DELETE(mChild);
+
 }
 
 void Main::initialize(int _eneLevel)
@@ -58,6 +62,9 @@ void Main::initialize(int _eneLevel)
 
 	//はじめは行動決定の場面
 	mChild = new FirstAnimation(actors);
+	mChild->mBGM = LoadSoundMem("Data/Sound/Battle.mp3");
+	PlaySoundMem(mChild->mBGM, DX_PLAYTYPE_LOOP);
+
 }
 
 Child* Main::update(GameMain* _parent)
@@ -84,7 +91,7 @@ Child* Main::update(GameMain* _parent)
 	}
 
 	if (Input_S() || mChild->goField())
-		next = new FieldNS::Main(mPlayerPos, party);
+		next = new FieldNS::Main(mPlayerPos);
 
 
 	return next;
@@ -120,19 +127,19 @@ void Main::addActor(int _eneLevel)
 	int battleID{ 0 };
 
 	//ファイル読み込み
-	std::ifstream player_in("Data/Text/PlayerExp.txt");
+	std::ifstream player_in("Data/Text/PlayerData.txt");
 
 	//ファイルがなかったら
 	if (!player_in)
 	{
 		using std::endl;
-		std::ofstream out("Data/Text/PlayerExp.txt");
+		std::ofstream out("Data/Text/PlayerData.txt");
 		out << "0 ゆうしゃ 0" << endl;
 		out << "1 まほうつかい 0" << endl;
 		out << "2 かくとうか 0" << endl;
 		out << "3 けんじゃ 0" << endl;
 		out.close();
-		player_in.open("Data/Text/PlayerExp.txt");
+		player_in.open("Data/Text/PlayerData.txt");
 	}
 
 	int p_lv{ 0 };//プレイヤ－のレベル
@@ -613,6 +620,8 @@ void Result::initialize(vector<Actor*> _actors)
 	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
 
 	initialized = true;
+	DeleteSoundMem(mBGM);
+	PlaySoundFile("Data/Sound/win.mp3", DX_PLAYTYPE_BACK);
 }
 
 BattleChild* Result::update(ActionController* _aController, StringController* _sController, vector<Actor*> _actors)
@@ -655,13 +664,12 @@ bool Result::goField() const
 		goNext |= player->goNext();
 	}
 	
-	//2秒経つか，レベルアップアニメーションが終わるか
-	return (mTime > (mGetExp + 30)) || (mGetExp == 0 && mTime > 30);
+	return goNext;
 }
 
 void Result::saveData()
 {
-	std::ofstream fout("Data/Text/PLayerExp.txt");
+	std::ofstream fout("Data/Text/PlayerData.txt");
 	for (auto& player : ResultPlayers)
 	{
 		fout << player->getSaveString() << std::endl;
@@ -684,6 +692,8 @@ void Result::ResultStatus::initialize(Actor* _actor, int _mGetExp)
 {
 	charaID = _actor->status.charaID;
 	name = _actor->status.name;
+
+	mTime = 0;
 
 	mLevelUp = false;
 	mLevelTime = 60;
@@ -753,8 +763,8 @@ string Result::ResultStatus::getSaveString()
 
 bool Result::ResultStatus::goNext() const
 {
-	//レベルアップから2秒後にreturn
-	return mTime > 120;
+	//レベルアップから2秒後にZキーまたは5秒後にreturn
+	return (mTime > 120 && Input_Z()) || mTime > 300;
 }
 
 //toCharacter.fileNameから画像の名前を生成

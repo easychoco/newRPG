@@ -72,13 +72,15 @@ void Player::update(const FieldNS::Main* _main)
 
 void Player::draw() const
 {
-	//パーティメンバー描画
-	if(next)next->draw(point->y);
 
 	//自機描画
 
 	//自機を描画するx座標を指定
 	int draw_x = (point->x / pointRate) % (MyData::MAP_WIDTH / 2 + 1);
+
+	//パーティメンバー描画
+	if (next)next->draw(draw_x, point->y);
+
 
 	//上端にいるなら
 	if(point->y < MyData::CY * pointRate)
@@ -99,6 +101,8 @@ void Player::draw() const
 //パーティメンバーを初期化
 void Player::initializeParty(const array<int, 4> _party)
 {
+	while (!inputLog.empty())inputLog.pop();
+	SAFE_DELETE(next);
 	next = new PartyMember(getFileName(toCharacter[_party[1]].fileName), *(this->point));
 	next->next = new PartyMember(getFileName(toCharacter[_party[2]].fileName), *(this->point));
 	next->next->next = new PartyMember(getFileName(toCharacter[_party[3]].fileName), *(this->point));
@@ -331,15 +335,20 @@ void Player::PartyMember::update(const FieldNS::Main* _main, const Player* _play
 
 }
 
-void Player::PartyMember::draw(int _py) const
+void Player::PartyMember::draw(int _px, int _py) const
 {
-	//後ろについてくるメンバーを描画
-	if (next)next->draw(_py);
-
 	//自機描画
 
 	//自機を描画するx座標を指定
 	int draw_x = (this->point->x / MyData::vectorRate) % (MyData::MAP_WIDTH / 2 + 1);
+
+	//画面移動時に描画位置がおかしくなるのを防止
+	if (draw_x - _px > 400)draw_x = 0;
+	if (_px - draw_x > 400)draw_x = 640;
+
+
+	//後ろについてくるメンバーを描画
+	if (next)next->draw(_px, _py);
 
 	//上端にいるなら
 	if (_py < MyData::CY * MyData::vectorRate)
