@@ -23,8 +23,9 @@ public:
 
 private:
 	int mTime;
-	int toImage[3];
+	int toImage[2];
 
+	int mTalkerSide;
 	int mLeftNum;
 	int mRightNum;
 	std::vector<string> mAllText;

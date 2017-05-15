@@ -7,6 +7,7 @@
 #include "BattleStringController.h"
 #include "..\FieldNS\FieldMain.h"
 #include "..\CharacterData.h"
+#include "..\MonsterData.h"
 
 #include "..\..\..\..\KeyInput.h"
 
@@ -22,11 +23,11 @@ namespace BattleNS {
 int BattleChild::mBGM;
 
 
-Main::Main(Vector2 _player, array<int, 4> _party, int _eneLevel) : 
+Main::Main(Vector2 _player, array<int, 4> _party, int _eneLevel, int _monsterID) : 
 	mPlayerPos(_player),
 	party(_party)
 {
-	initialize(_eneLevel);
+	initialize(_eneLevel, _monsterID);
 }
 
 Main::~Main()
@@ -47,22 +48,23 @@ Main::~Main()
 
 }
 
-void Main::initialize(int _eneLevel)
+void Main::initialize(int _eneLevel, int _monsterID)
 {
-	stage = new Stage();
+	stage = new Stage(_eneLevel);
 	aController = new ActionController();
 	sController = new StringController();
 
 	mTime = 0;
+	mIsEscape = false;
 
 	sController->addMessage("まものがあらわれた！");
 	
 	//バトルに参加するキャラクターの配列を作成
-	addActor(_eneLevel);
+	addActor(_eneLevel, _monsterID);
 
 	//はじめは行動決定の場面
 	mChild = new FirstAnimation(actors);
-	mChild->mBGM = LoadSoundMem("Data/Sound/Battle.mp3");
+	mChild->mBGM = LoadSoundMem("Data/Sound/battle.mp3");
 	PlaySoundMem(mChild->mBGM, DX_PLAYTYPE_LOOP);
 
 }
@@ -82,6 +84,7 @@ Child* Main::update(GameMain* _parent)
 
 	//バトルの処理(Stateパターン)
 	BattleChild*  nextChild = mChild->update(aController, sController, actors);
+	mIsEscape |= aController->escapeBattle();
 
 	//バトルのシーケンス更新
 	if (mChild != nextChild)
@@ -91,7 +94,17 @@ Child* Main::update(GameMain* _parent)
 	}
 
 	if (Input_S() || mChild->goField())
-		next = new FieldNS::Main(mPlayerPos);
+	{
+		//負けていたらこれがfalseになる
+		bool f_player{ false };
+		//f_playerとf_enemyにそれぞれisAlive()を足す(論理和)
+		for (auto* act : actors)
+		{
+			if (!act->status.isEnemy) f_player |= act->isAlive();
+		}
+
+		next = new FieldNS::Main(mPlayerPos, mIsEscape || !f_player);
+	}
 
 
 	return next;
@@ -102,7 +115,6 @@ void Main::draw() const
 	stage->draw();
 
 	drawStatus(0, 330 - players.size() * 40, players);//330はメッセージ枠の上端
-	//drawStatus(440, 330 - enemies.size() * 40, enemies);//330は(ry
 	sController->draw();
 	aController->draw();
 	for (auto e : enemies)
@@ -114,12 +126,10 @@ void Main::draw() const
 }
 
 
-
-
 //========================================================================
 // 内部private関数
 //========================================================================
-void Main::addActor(int _eneLevel)
+void Main::addActor(int _eneLevel, int _monsterID)
 {
 	//Actor配列の作成
 
@@ -197,20 +207,46 @@ void Main::addActor(int _eneLevel)
 
 	//ここから敵
 
+	//通常エンカウント
+	if (_monsterID == -10)
+	{
+		normalEncount(p_lv, _eneLevel, battleID);
+	}
+	//シンボルエンカウント
+	else
+	{
+		symbolEncount(_monsterID, battleID);
+	}
+
+
+	//playersとenemies配列の作成
+	//参照によりactorsと同じインスタンスを使う
+	for (auto &actor : actors)
+	{
+		if (actor->status.isEnemy)enemies.push_back(actor);
+		else players.push_back(actor);
+	}
+}
+
+void Main::normalEncount(int _p_lv, int _eneLevel, int _battleID)
+{
 	//敵は1~4体
 	short ene_num{ 1 };
 
 	//プレイヤーのレベルがある程度高かったら敵が複数体出現
-	if (p_lv > _eneLevel * 5 - 2)ene_num += GetRand(3);
-
+	if (_p_lv > _eneLevel * 5 - 2)ene_num += GetRand(3);
 
 	for (int i = 0; i < ene_num; i++)
 	{
 		int tmp_ID = GetRand(4);
 		EnemySpec::Status ene = (toEneStatus[_eneLevel - 1])[tmp_ID];
 
-		//敵のレベルは _eneLevel * 5 + 0~3
+		//敵のレベルは _eneLevel - 1 * 5 + 0~3
 		int ene_lv = (_eneLevel - 1) * 5 + GetRand(3);
+
+		//自分のレベルが1なら敵レベルを0に
+		ene_lv *= (_p_lv != 1);
+
 		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
 
 		//能力値を計算
@@ -224,10 +260,10 @@ void Main::addActor(int _eneLevel)
 		//回復量を計算
 		int r = h - abs(a - c);
 		r = max(r / 3, min(a, c));
-		
-		Actor::Status e{ battleID++, 0, ene.name, true, ene_lv, h, a, b, c, d, r, s,  };
 
-		int exp = min(300, max(10, 20 * (ene_lv - p_lv + 5)) );
+		Actor::Status e{ _battleID++, 0, ene.name, true, ene_lv, h, a, b, c, d, r, s, };
+
+		int exp = min(300, max(10, 25 * (ene_lv - _p_lv + 5)));
 		Enemy* tmpEnemy = new Enemy(e, exp);
 		tmpEnemy->setName(ene.name);
 		tmpEnemy->setData(ene.filename, 640 / (ene_num + 1) * (i + 1), 100);
@@ -235,14 +271,46 @@ void Main::addActor(int _eneLevel)
 		actors.push_back(tmpEnemy);
 	}
 
-	//playersとenemies配列の作成
-	//参照によりactorsと同じインスタンスを使う
-	for (auto &actor : actors)
+}
+
+void Main::symbolEncount(int _monsterID, int _battleID)
+{
+	//MonsterData.hから読み込んでactorsにpush
+
+	short ene_num{ 1 };
+	if (_monsterID == 3)ene_num = 3;
+	for (int i = 0; i < ene_num; i++)
 	{
-		if (actor->status.isEnemy)enemies.push_back(actor);
-		else players.push_back(actor);
+		EnemySpec::Status ene = toMonster[_monsterID].status;
+
+		int ene_lv = toMonster[_monsterID].Lv;
+		int h{ -10 }, a{ -10 }, b{ -10 }, c{ -10 }, d{ -10 }, s{ -10 };
+
+		//能力値を計算
+		h = calcHP(ene.h, ene_lv);
+		a = calcStatus(ene.a, ene_lv);
+		b = calcStatus(ene.b, ene_lv);
+		c = calcStatus(ene.c, ene_lv);
+		d = calcStatus(ene.d, ene_lv);
+		s = calcStatus(ene.s, ene_lv);
+
+		//回復量を計算
+		int r = h - abs(a - c);
+		r = max(r / 3, min(a, c));
+
+		Actor::Status e{ _battleID++, 0, ene.name, true, ene_lv, h, a, b, c, d, r, s, };
+
+		int exp = 210 / ene_num;
+		Enemy* tmpEnemy = new Enemy(e, exp);
+		tmpEnemy->setName(ene.name);
+		tmpEnemy->setData(ene.filename, 640 / (ene_num + 1) * (i + 1), 100);
+
+		actors.push_back(tmpEnemy);
 	}
 }
+
+
+
 
 void Main::drawStatus(int _x, int _y, const vector<Actor*>& _actor) const
 {
@@ -505,10 +573,13 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 	BattleChild* next = this;
 
 	//バトル終了
-	if (finBattle(_actors))
+	bool win = isWin(_actors);//敵が全滅しているか
+	bool lose = isLose(_actors);//味方が全滅しているか
+
+	if (win || lose)
 	{
 		mFinTime++;
-		updateMessage(_sController, true);
+		updateMessage(_sController, win);
 		
 		if (mFinTime == 105)
 		{
@@ -517,10 +588,10 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 			{
 				if (e->status.isEnemy)exp += e->getExp();
 			}
-			next = new Result(exp);
+			next = new Result(exp * win);
 		}
 	}
-	else 	//バトル中
+	else//バトル中
 	{
 		bool battleDone = _aController->update(_sController, _actors);
 
@@ -530,12 +601,12 @@ BattleChild* Battle::update(ActionController* _aController, StringController* _s
 			return new Result(0);
 		}
 
-		//行動選択へ
-		//ターン終了と同時にバトルが終わった場合は行動選択をせずに終わる
-		if (battleDone && !finBattle(_actors))
+		//ターン終了時にバトルが終わっていなかったら行動選択へ
+		if (battleDone && !(isWin(_actors) || isLose(_actors)))
 		{
 			next = new Decide(_actors);
 		}
+		//ターン終了と同時にバトルが終わった場合は行動選択をせずに終わる
 	}
 	
 	return next;
@@ -550,24 +621,38 @@ void Battle::draw(ActionController* _aController) const
 //========================================================================
 // 内部private関数
 //========================================================================
-bool Battle::finBattle(const vector<Actor*> _actors) const 
+bool Battle::isWin(const vector<Actor*> _actors) const 
 {
 	bool f_enemy{ false };
-	bool f_player{ false };
 
 	//f_playerとf_enemyにそれぞれisAlive()を足す(論理和)
 	for(auto* act : _actors) 
 	{
 		if (act->status.isEnemy)f_enemy |= act->isAlive();
-		else f_player |= act->isAlive();
+		
 	}
 
-	//f_enemyとf_playerについて...
-	//PlayerとEnemyのどちらかのHPがすべてゼロならfalseのまま
+	//f_enemyについて...
+	//EnemyのHPがすべてゼロならfalseのまま
 	//HPがゼロでないActorが一つでもあればtrueになる
-	//どちらかがfalseならtrueが返される
-	return !(f_player & f_enemy);
+	return !f_enemy;
 }
+
+bool Battle::isLose(const vector<Actor*> _actors) const
+{
+	bool f_player{ false };
+	//f_playerとf_enemyにそれぞれisAlive()を足す(論理和)
+	for (auto* act : _actors)
+	{
+		if (!act->status.isEnemy) f_player |= act->isAlive();
+	}
+
+	//f_playerについて...
+	//PlayerのHPがすべてゼロならfalseのまま
+	//HPがゼロでないActorが一つでもあればtrueになる
+	return !f_player;
+}
+
 
 void Battle::updateMessage(StringController* _sController, bool _win)
 {
@@ -616,8 +701,7 @@ void Result::initialize(vector<Actor*> _actors)
 		if(!act->status.isEnemy)ResultPlayers.push_back(new ResultStatus(act, mGetExp));
 	}
 	
-	//mImg = LoadGraph("Data/Image/play_up.png");
-	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
+	mBackImg = LoadGraph("Data/Image/ResultBack.png");
 
 	initialized = true;
 	DeleteSoundMem(mBGM);
@@ -735,7 +819,7 @@ void Result::ResultStatus::draw(int _x, int _y) const
 {
 	//背景と立ち絵を描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 50);
-	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::BLUE, true);
+	DrawBox(_x + 5, _y + 5, _x + 320, _y + 240, MyData::WHITE, true);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 230);
 	DrawGraph(_x + 90, _y, mImg, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 200);
@@ -763,14 +847,14 @@ string Result::ResultStatus::getSaveString()
 
 bool Result::ResultStatus::goNext() const
 {
-	//レベルアップから2秒後にZキーまたは5秒後にreturn
-	return (mTime > 120 && Input_Z()) || mTime > 300;
+	//レベルアップから1秒後にZキーまたは3秒後にreturn
+	return (mTime > 60 && Input_Z()) || mTime > 180;
 }
 
 //toCharacter.fileNameから画像の名前を生成
 const string Result::ResultStatus::getFileName(char* _fileName) const
 {
-	string fileName = "Data/Image/up_";
+	string fileName = "Data/Image/Character/up_";
 	fileName += _fileName;
 	fileName += ".png";
 

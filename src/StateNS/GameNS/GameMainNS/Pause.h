@@ -36,6 +36,7 @@ private:
 		virtual bool finPause() const = 0;
 		void setParty();//ファイルからパーティ情報を読み込み
 	protected:
+		void playCancelSound() const;
 		struct Chara { int ID; string name; int exp; };
 
 		bool prePush = false;

@@ -13,6 +13,14 @@ namespace GameMainNS{
 
 Converse::Converse(char* textName)
 {
+
+	/*
+	入力文は各行の先頭に[左][右][透過]の番号をつけること
+	0で勇者
+	1で王様
+	[話者]は0で透過無し，1で右を透過，2で左を透過，3で両方透過
+	*/
+
 	string name = "Data/Text/Converse/";
 	name += textName;
 	name += ".txt";
@@ -43,20 +51,21 @@ Converse::~Converse()
 void Converse::initialize()
 {
 
+
 	toImage[0] = LoadGraph("Data/Image/Converse/player.png");
 	toImage[1] = LoadGraph("Data/Image/Converse/king.png");
-	toImage[2] = LoadGraph("Data/Image/Converse/princess.png");
 
 	bool isErr = (toImage[0] != -1) & (toImage[1] != -1) & (toImage[2] != -1);
 	assert(isErr && "Converse : 画像読み込みエラー");
 
+	mTalkerSide = 0;
 	mLeftNum = 0;
 	mRightNum = 0;
 
 	mTime = 0;
 	mNowText = 0;
 	fin = false;
-	mPrePush = false;
+	mPrePush = true;
 
 	sController = new StringController();
 
@@ -90,14 +99,19 @@ void Converse::draw() const
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//会話者を描画
+
+	//左側を透過
+	if(mTalkerSide & 0b10)SetDrawBlendMode(DX_BLENDMODE_ALPHA, 80);
 	DrawGraph(0, 0, toImage[mLeftNum], true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//右側を透過
+	if (mTalkerSide & 0b01)SetDrawBlendMode(DX_BLENDMODE_ALPHA, 80);
 	DrawTurnGraph(350, 0, toImage[mRightNum], true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//テキストを描画
 	sController->draw();
-
-	//for Debug
-	DrawFormatString(0, 30, 0, "%d %d", mAllText.size(), mNowText);
 }
 
 //==============================================
@@ -115,11 +129,13 @@ void Converse::nextText()
 	}
 
 	//会話者を設定
-	mLeftNum = (char)(text[0]) - 48;
-	mRightNum = (char)(text[1]) - 48;
+
+	mLeftNum = (int)(text[0]) - 48;
+	mRightNum = (int)(text[1]) - 48;
+	mTalkerSide = (int)(text[2]) - 48;
 
 	//ヘッダの切り落とし
-	text.erase(text.begin(), text.begin() + 2);
+	text.erase(text.begin(), text.begin() + 3);
 
 
 	//文章を更新

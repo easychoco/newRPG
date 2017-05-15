@@ -11,9 +11,9 @@ namespace BattleNS {
 class Stage
 {
 public:
-	Stage();
+	Stage(int);
 	~Stage();
-	void initialize();
+	void initialize(int);
 	void update();
 	void draw() const;
 

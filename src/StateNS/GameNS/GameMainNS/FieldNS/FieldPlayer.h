@@ -15,7 +15,7 @@ public:
 	Player(Vector2);
 	~Player();
 	void initialize(Vector2);
-	void update(const FieldNS::Main*);
+	void update(FieldNS::Main*);
 	void draw() const;
 	const Vector2* getVector2() const { return point; }
 	bool isEncount() const { return mIsEncount; };
@@ -52,6 +52,9 @@ private:
 	
 	//座標ベクトル
 	Vector2* point;
+
+	//前フレームにキーが入力されたかどうか
+	bool prePush;
 
 	//敵にエンカウントしたかどうか
 	bool mIsEncount;

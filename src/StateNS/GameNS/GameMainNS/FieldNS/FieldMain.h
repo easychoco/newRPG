@@ -16,12 +16,13 @@ class Stage;
 class Player;
 class GameSystem;
 class EncountAnimation;
-
+class NPC;
 
 class Main : public Child
 {
 public:
 	Main(Vector2);
+	Main(Vector2, bool isEscape);
 	~Main();
 	void initialize(Vector2);
 	Child* update(GameMain*);
@@ -29,21 +30,27 @@ public:
 	bool canPass(int, int) const;
 	void loadParty();
 	const array<int, 4> getParty() const;
-private:
+	void talkWithNPC(Vector2*);
+	void forceEncount(int monsterID);
 
+private:
 	Stage* mStage;
 	Player* mPlayer;
 	GameSystem* mGameSystem;
 	EncountAnimation* mEAnimation;
 	int mBGM;
+	int monsterID;
+	static int nextMonster;
+	static bool isTalkWithSymbol;
 
+	vector<NPC*> NPCs;
 	array<int, 4> party;
 };
 
 class EncountAnimation
 {
 public:
-	EncountAnimation();
+	EncountAnimation(bool);
 	~EncountAnimation();
 	void initialize();
 	bool update();
@@ -52,7 +59,7 @@ public:
 
 private:
 	int mTime;
-	
+	bool cancelable;
 
 	//バトル開始時のアニメーション
 	class AnimeChild

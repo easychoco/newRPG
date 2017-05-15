@@ -15,7 +15,11 @@ public:
 	void draw() const;
 
 private:
+	int mTime;
+
 	int mBackImg;
+	int mLogoImg;
+	int mPushZImg;
 };
 
 

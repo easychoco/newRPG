@@ -6,19 +6,23 @@ namespace GameMainNS {
 namespace BattleNS {
 
 
-Stage::Stage()
+Stage::Stage(int stageNum)
 {
-	initialize();
+	initialize(stageNum);
 }
 
 Stage::~Stage()
 {
-
+	DeleteGraph(mBackImg);
 }
 
-void Stage::initialize()
+void Stage::initialize(int _stageNum)
 {
-	mBackImg = LoadGraph("Data/Image/BattleBackTmp.png");
+	string fileName = "Data/Image/BattleBack";
+	fileName += std::to_string(_stageNum);
+	fileName += ".png";
+
+	mBackImg = LoadGraph(fileName.c_str());
 	assert(mBackImg != -1 && "バトル背景画像読み込みエラー");
 }
 

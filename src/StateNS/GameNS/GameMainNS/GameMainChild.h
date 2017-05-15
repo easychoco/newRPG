@@ -25,7 +25,8 @@ public:
 	virtual ~Child() {};
 	virtual Child* update(GameMain*) = 0;
 	virtual void draw() const = 0;
-	virtual void loadParty() = 0;
+	virtual void loadParty() {}
+	virtual void forceEncount(int ID) {}
 };
 
 

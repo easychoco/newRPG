@@ -26,7 +26,7 @@ Player::~Player()
 
 void Player::initialize(Vector2 _point)
 {
-	point =  (_point.x == 0) ? new Vector2{ 96000, 800000 } : new Vector2{ _point.x, _point.y };
+	point =  (_point.x == 0) ? new Vector2{ 112000, 904000 } : new Vector2{ _point.x, _point.y };
 
 	int tmp = LoadDivGraph(getFileName(toCharacter[0].fileName).c_str(), 24, 6, 4, 32, 32, mImg);
 	assert(tmp == 0 && "move_player.png“Ç‚İ‚İƒGƒ‰[!");
@@ -35,19 +35,19 @@ void Player::initialize(Vector2 _point)
 	mIsEncount = false;
 	mGraphNum = 0;
 	mSpeed = 6.0f;
+	prePush = false;
 
 	next = NULL;
 	partyInitialized = false;
 
 }
 
-void Player::update(const FieldNS::Main* _main)
+void Player::update(FieldNS::Main* _main)
 {
 	if (!partyInitialized)
 	{
 		initializeParty(_main->getParty());
 		partyInitialized = true;
-
 	}
 
 	mIsEncount = false;
@@ -68,6 +68,17 @@ void Player::update(const FieldNS::Main* _main)
 			inputLog.pop();
 		}
 	}
+
+	if (!prePush)
+	{
+		if (Input_Z())
+		{
+			_main->talkWithNPC(point);
+		}
+	}
+	prePush = Input_Z();
+
+
 }
 
 void Player::draw() const
@@ -111,7 +122,7 @@ void Player::initializeParty(const array<int, 4> _party)
 //toCharacter.fileName‚©‚ç‰æ‘œ‚Ì–¼‘O‚ğ¶¬
 const string Player::getFileName(char* _fileName) const
 {
-	string fileName = "Data/Image/move_";
+	string fileName = "Data/Image/Character/move_";
 	fileName += _fileName;
 	fileName += ".png";
 

@@ -23,12 +23,11 @@ class BattleChild;
 class Main : public Child
 {
 public:
-	Main(Vector2, array<int, 4>, int);
+	Main(Vector2, array<int, 4>, int eneLevel, int monsterID);
 	~Main();
-	void initialize(int);
+	void initialize(int, int);
 	Child* update(GameMain*);
 	void draw() const;
-	void loadParty() {};
 
 private:
 	Stage* stage;
@@ -39,6 +38,7 @@ private:
 	BattleChild* mChild;
 	int mTime;
 	int mFinTime = 0;
+	bool mIsEscape;
 	
 	//プレイヤーのフィールドでの位置
 	const Vector2 mPlayerPos;
@@ -59,7 +59,13 @@ private:
 	//内部private関数
 	//=======================
 	//Actorの配列を作成
-	void addActor(int);
+	void addActor(int, int);
+
+	//通常エンカウント
+	void normalEncount(int, int, int battleID);
+
+	//シンボルエンカウント
+	void symbolEncount(int monsterID, int battleID);
 
 	//プレイヤーのステータスを描画する
 	void drawStatus(int, int, const vector<Actor*>&) const;
@@ -186,8 +192,11 @@ public:
 private:
 	int mFinTime = 0;
 
-	//バトルが終わったか
-	bool finBattle(const vector<Actor*>) const;
+	//敵が全滅したか
+	bool isWin(const vector<Actor*>) const;
+
+	//味方が全滅したか
+	bool isLose(const vector<Actor*>) const;
 
 	//バトル終了後のメッセージを出力
 	void updateMessage(StringController*, bool);

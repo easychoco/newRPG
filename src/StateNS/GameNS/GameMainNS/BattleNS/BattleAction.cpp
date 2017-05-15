@@ -124,8 +124,20 @@ void ActionController::updateMessage(StringController* _sController, vector<Acto
 	//攻撃か魔法なら
 
 	//ATTACKかMAGICかでメッセージ変更
-	if (actions.front()->act == Action::Actions::ACT_ATTACK) s += "こうげき";
-	else if (actions.front()->act == Action::Actions::ACT_MAGIC) s += "まほう";
+	if (actions.front()->act == Action::Actions::ACT_ATTACK)
+	{
+		s += "こうげき";
+	}
+	else if (actions.front()->act == Action::Actions::ACT_MAGIC)
+	{
+		s += "まほう";
+
+		//魔法音
+		string soundName = "Data/Sound/magic";
+		soundName += std::to_string(GetRand(2) + 1);
+		soundName += ".mp3";
+		PlaySoundFile(soundName.c_str(), DX_PLAYTYPE_BACK);
+	}
 	_sController->addMessage(s);
 
 	return;
@@ -202,6 +214,12 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	if (actions.front()->act == Action::Actions::ACT_ATTACK)
 	{
 		damage_value = _actors[from]->status.attack - _actors[to]->status.defence + _actors[from]->status.attack / 20;
+
+		//攻撃音
+		string soundName = "Data/Sound/attack";
+		soundName += std::to_string(GetRand(2) + 1);
+		soundName += ".mp3";
+		PlaySoundFile(soundName.c_str(), DX_PLAYTYPE_BACK);
 	}
 	//まほう
 	else if (actions.front()->act == Action::Actions::ACT_MAGIC)
@@ -210,7 +228,7 @@ void ActionController::updateDamage(StringController* _sController, vector<Actor
 	}
 
 	//ダメージ量は最小でレベルの半分の値
-	damage_value = max(damage_value, _actors[from]->status.level / 2);
+	damage_value = max(damage_value, _actors[from]->status.level / 2 + 1);
 
 	//ダメージ
 	_actors[to]->damage(damage_value);

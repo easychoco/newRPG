@@ -73,6 +73,12 @@ void Pause::PauseChild::setParty()
 	}
 }
 
+void Pause::PauseChild::playCancelSound() const
+{
+//	static int mCancel = LoadSoundMem("Data/Sound/Cancel.mp3");
+	PlaySoundFile("Data/Sound/Cancel.mp3", DX_PLAYTYPE_BACK);
+}
+
 //-----------------------------------------
 //Home
 //-----------------------------------------
@@ -138,7 +144,7 @@ Pause::PauseChild* Pause::Home::update(GameMain* _gameMain)
 			switch (mCursorPos)
 			{
 			case 0: next = new PartyChange(); break;
-			case 1: next = new Config(); break;
+			case 1: playCancelSound(); break;//Config‚Íì‚Á‚Ä‚È‚¢‚Å‚·D
 			case 2: next = new Save(); break;
 			case 3: next = new Load(); break;
 			case 4: isFin = true; break;
@@ -163,13 +169,12 @@ void Pause::Home::draw() const
 
 bool Pause::Home::finPause() const
 {
-	//for Debug
 	return isFin;
 }
 
 string Pause::Home::getFileName(char* _fileName)
 {
-	string ret = "Data/Image/move_";
+	string ret = "Data/Image/Character/move_";
 	ret += _fileName;
 	ret += ".png";
 	return ret;
@@ -223,7 +228,7 @@ void Pause::PartyChange::initialize()
 	mTime = 0;
 	mSelectedChara = 0;
 	mNowSelect = 0;
-	drawNum = (int)sqrt(CharacterData::CharaNumber) + 1;
+	drawNum = (int)ceil(sqrt(CharacterData::CharaNumber));
 	pEdit = PartyEdit::EDIT_PARTY;
 
 	//‰æ‘œ“Ç‚İ‚İ
@@ -376,7 +381,11 @@ bool Pause::PartyChange::checkParty()
 	//“¯‚¶ƒLƒƒƒ‰‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚ç
 	for (auto p : party)
 	{
-		if (p.ID == mNowSelect)return false;
+		if (p.ID == mNowSelect)
+		{
+			playCancelSound();
+			return false;
+		}
 	}
 
 	//‚»‚¤‚Å‚È‚¯‚ê‚Î“ü‚ê‘Ö‚¦
@@ -461,7 +470,7 @@ void Pause::PartyChange::drawParty() const
 
 string Pause::PartyChange::getUpFileName(char* _fileName)
 {
-	string ret = "Data/Image/up_";
+	string ret = "Data/Image/Character/up_";
 	ret += _fileName;
 	ret += ".png";
 	return ret;
@@ -469,7 +478,7 @@ string Pause::PartyChange::getUpFileName(char* _fileName)
 
 string Pause::PartyChange::getMoveFileName(char* _fileName)
 {
-	string ret = "Data/Image/move_";
+	string ret = "Data/Image/Character/move_";
 	ret += _fileName;
 	ret += ".png";
 	return ret;

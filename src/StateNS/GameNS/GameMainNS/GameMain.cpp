@@ -54,7 +54,6 @@ void GameMain::update(GameParent* _parent)
 			partyChanged = false;
 		} 
 	}
-
 	else
 	{
 		Child* next = mChild->update(this);
@@ -89,6 +88,11 @@ void GameMain::toPause()
 void GameMain::changeParty()
 {
 	partyChanged = true;
+}
+
+void GameMain::forceEncount(int _monsterID)
+{
+	mChild->forceEncount(_monsterID);
 }
 
 //==============================================

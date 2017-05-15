@@ -4,6 +4,7 @@
 
 #include "Data.h"
 
+#include<fstream>
 
 Parent::Parent()
 {
@@ -14,6 +15,13 @@ Parent::Parent()
 Parent::~Parent()
 {
 	SAFE_DELETE(mChild);
+
+	//セーブデータ初期化
+	std::ofstream fout("Data/Text/PlayerData.txt");
+	fout << "0 ゆうしゃ 0" << std::endl;
+	fout << "1 せんし 0" << std::endl;
+	fout << "2 まほうつかい 0" << std::endl;
+	fout << "3 かくとうか 0" << std::endl;
 }
 
 void Parent::initialize()

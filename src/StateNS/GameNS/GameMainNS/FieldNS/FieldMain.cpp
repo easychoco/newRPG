@@ -18,8 +18,24 @@ namespace GameNS {
 namespace GameMainNS {
 namespace FieldNS{
 
+
+int Main::nextMonster = 0;
+bool Main::isTalkWithSymbol = false;
+
 Main::Main(Vector2 _player)
 {
+	initialize(_player);
+
+	//初手は王様と会話
+	NPCs[5]->talk( &Vector2(80000, 888000) );
+}
+
+Main::Main(Vector2 _player, bool isEscape)
+{
+	//逃げていなかったらnextMonster++
+	nextMonster += (!isEscape & isTalkWithSymbol);
+	isTalkWithSymbol = false;
+
 	initialize(_player);
 }
 
@@ -29,6 +45,9 @@ Main::~Main()
 	SAFE_DELETE(mPlayer);
 	SAFE_DELETE(mGameSystem);
 	SAFE_DELETE(mEAnimation);
+	for (auto& n : NPCs){ SAFE_DELETE(n); }
+	NPCs.clear();
+	NPCs.shrink_to_fit();
 
 	DeleteSoundMem(mBGM);
 }
@@ -40,8 +59,22 @@ void Main::initialize(Vector2 _player)
 	mGameSystem = new GameSystem();
 	mEAnimation = 0;
 
+	switch (nextMonster)
+	{
+	case 0: NPCs.push_back(new Monster( 320000, 608000, 0, "s0"));
+	case 1: NPCs.push_back(new Monster(  64000, 224000, 1, "s1"));
+	case 2: NPCs.push_back(new Monster( 800000, 496000, 2, "s2"));
+	case 3:	NPCs.push_back(new Monster(1120000, 384000, 3, "s3"));
+	case 4:	NPCs.push_back(new Monster(1120000,  32000, 4, "s4"));
+	}
+
+	NPCs.push_back(new Ally(  64000, 888000, "Data/Image/Character/king.png", "0"));
+
+	//BGM再生
 	mBGM = LoadSoundMem("Data/Sound/field1.mp3");
 	PlaySoundMem(mBGM, DX_PLAYTYPE_LOOP);
+
+	monsterID = -10;
 
 	std::ifstream fin("Data/Text/PlayerData.txt");
 	std::string gomi;
@@ -54,11 +87,14 @@ void Main::initialize(Vector2 _player)
 
 Child* Main::update(GameMain* _parent)
 {
-
 	Child* next = this;
 
 	//update
 	mStage->update();
+	for (auto &n : NPCs)
+	{
+		n->update(_parent);
+	}
 	mGameSystem->update();
 
 	//エンカウントしていなかったら移動可能
@@ -67,7 +103,7 @@ Child* Main::update(GameMain* _parent)
 	//敵にエンカウントしたら
 	if (mPlayer->isEncount() && mStage->getEnemyLevel(mPlayer->getVector2()) > 0)
 	{
-		mEAnimation = new EncountAnimation();
+		mEAnimation = new EncountAnimation(true);
 		//エンカウントのフラグを折るために一度だけupdate()
 		mPlayer->update(this);
 	}
@@ -76,14 +112,17 @@ Child* Main::update(GameMain* _parent)
 	if (mEAnimation)
 	{
 		//条件が満たされたらバトルへ
-		if (mEAnimation->update())next = new BattleNS::Main(*mPlayer->getVector2(), party, mStage->getEnemyLevel(mPlayer->getVector2()));
-
+		if (mEAnimation->update())
+		{
+			next = new BattleNS::Main(*mPlayer->getVector2(), party, mStage->getEnemyLevel(mPlayer->getVector2()), monsterID);
+			if (!NPCs[0]->isAlive())isTalkWithSymbol = true;
+		}
 
 		//キャンセルでインスタンス破壊
 		if (mEAnimation->cancelEncount())SAFE_DELETE(mEAnimation);
 	}
 
-	//for Debug
+	//ポーズ画面へ
 	if (Input_S())
 	{
 		_parent->toPause();
@@ -94,8 +133,8 @@ Child* Main::update(GameMain* _parent)
 
 void Main::draw() const
 {
-	DrawFormatString(0, 40, MyData::WHITE, "FieldMain");
 	mStage->draw(mPlayer->getVector2());
+	for (auto &n : NPCs)n->draw(mPlayer->getVector2());
 	mPlayer->draw();
 	mGameSystem->draw();
 
@@ -105,7 +144,12 @@ void Main::draw() const
 
 bool Main::canPass(int px, int py) const
 {
-	return mStage->canPass(px, py);
+	//for Debug
+	//bool ret = true;
+	//for (auto n : NPCs)ret &= n->canPass(px, py);
+	//return (mStage->canPass(px, py) && ret) || Input_X();
+
+	return mStage->canPass(px, py) && NPCs[0]->canPass(px, py);
 }
 
 void Main::loadParty()
@@ -125,22 +169,41 @@ const array<int, 4> Main::getParty() const
 	return party;
 }
 
+void Main::talkWithNPC(Vector2* _player)
+{
+	for (auto &n : NPCs)n->talk(_player);
+}
+
+void Main::forceEncount(int _monsterID)
+{
+	monsterID = _monsterID;
+
+	mEAnimation = new EncountAnimation(false);
+	//エンカウントのフラグを折るために一度だけupdate()
+	mPlayer->update(this);
+}
+
 //====================================
 //EncountAnimationクラス
 //====================================
-EncountAnimation::EncountAnimation()
+EncountAnimation::EncountAnimation(bool _cancelable)
 {
+	cancelable = _cancelable;
 	initialize();
 }
 
 EncountAnimation::~EncountAnimation()
 {
 	SAFE_DELETE(mChild);
+	StopSoundFile();
 }
 
 void EncountAnimation::initialize()
 {
 	mTime = 0;
+
+	//エンカウント音
+	PlaySoundFile("Data/Sound/encount.mp3", DX_PLAYTYPE_BACK);
 
 	//どのアニメーションにするかを乱数で決定
 	auto seed = GetRand(3);
@@ -172,7 +235,7 @@ void EncountAnimation::draw() const
 //trueが返るとフィールドへ戻る
 bool EncountAnimation::cancelEncount() const
 {
-	return Input_X();
+	return cancelable & Input_X();
 }
 
 

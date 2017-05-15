@@ -29,6 +29,7 @@ public:
 	void toConverse(char* fileName);
 	void toPause();
 	void changeParty();
+	void forceEncount(int monsterID);
 	
 	struct Status {
 		int ID;

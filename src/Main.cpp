@@ -22,6 +22,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		ScreenFlip();
 	}
 
+	delete(parent);
+	parent = 0;
+
 	InitGraph();
 
 	DxLib_End();
