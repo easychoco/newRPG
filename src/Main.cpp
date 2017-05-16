@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	DxLib_Init();
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClearDrawScreen();
-	SetMainWindowText("RPG(仮称)");
+	SetMainWindowText("おうさまクエスト");
 
 	Parent* parent = new Parent();
 

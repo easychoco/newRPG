@@ -4,7 +4,7 @@
 #include "FieldSystem.h"
 #include "FieldNPC.h"
 #include "..\BattleNS\BattleMain.h"
-
+#include "..\MonsterData.h"
 
 #include "..\..\..\..\Data.h"
 #include "..\..\..\..\KeyInput.h"
@@ -126,6 +126,12 @@ Child* Main::update(GameMain* _parent)
 	if (Input_S())
 	{
 		_parent->toPause();
+	}
+
+	//ƒNƒŠƒA‰æ–Ê‚Ö
+	if (nextMonster >= toMonster.size())
+	{
+		_parent->moveToClear();
 	}
 
 	return next;

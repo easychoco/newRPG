@@ -29,7 +29,8 @@ void GameMain::initialize()
 {
 	mChild = new FieldNS::Main(Vector2(0, 0));
 	mConverse = 0;
-	mPause = 0;
+	mPause = 0; 
+	toClear = false;
 	partyChanged = false;
 }
 
@@ -65,6 +66,11 @@ void GameMain::update(GameParent* _parent)
 			mChild = next;
 		}
 	}
+
+	if (toClear)
+	{
+		_parent->moveTo(GameParent::SEQ_CLEAR);
+	}
 }
 
 void GameMain::draw() const
@@ -93,6 +99,11 @@ void GameMain::changeParty()
 void GameMain::forceEncount(int _monsterID)
 {
 	mChild->forceEncount(_monsterID);
+}
+
+void GameMain::moveToClear()
+{
+	toClear = true;
 }
 
 //==============================================

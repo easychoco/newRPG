@@ -2,15 +2,6 @@
 
 #include "..\..\..\Data.h"
 
-//–{—ˆ‚ÍDB‚É‘‚­‚×‚«‚±‚Æ
-namespace MonsterData {
-
-
-
-
-}
-
-
 
 //“G‚Ì«”\
 //DB‚É‘‚­‚×‚«“à—e

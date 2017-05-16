@@ -30,6 +30,7 @@ public:
 	void toPause();
 	void changeParty();
 	void forceEncount(int monsterID);
+	void moveToClear();
 	
 	struct Status {
 		int ID;
@@ -43,6 +44,7 @@ private:
 	Converse* mConverse;
 	Pause* mPause;
 
+	bool toClear;
 	bool partyChanged;
 
 };

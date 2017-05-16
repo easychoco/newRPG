@@ -4,10 +4,8 @@
 #include "..\..\Data.h"
 #include "..\..\KeyInput.h"
 
-
 namespace StateNS {
 namespace GameNS {
-
 
 Clear::Clear()
 {
@@ -27,6 +25,21 @@ void Clear::initialize()
 Child* Clear::update(StateNS::Parent* _parent)
 {
 	Child* next = this;
+
+	/*
+	最初なんかウワーってくる
+	"Game Clear"
+	時限式で会話をする
+	
+	会話が終わったら
+	"Thank you for Playing"
+	"Xキーでタイトルへ"
+
+
+	ロード時に位置変更
+	*/
+
+	
 
 	if (Input_V())
 	{
