@@ -24,11 +24,11 @@ public:
 	Main(Vector2);
 	Main(Vector2, bool isEscape);
 	~Main();
-	void initialize(Vector2);
 	Child* update(GameMain*);
 	void draw() const;
 	bool canPass(int, int) const;
 	void loadParty();
+	void loadData() { initialize(); };
 	const array<int, 4> getParty() const;
 	void talkWithNPC(Vector2*);
 	void forceEncount(int monsterID);
@@ -42,6 +42,9 @@ private:
 	int monsterID;
 	static int nextMonster;
 	static bool isTalkWithSymbol;
+	
+	void initialize();
+	void initialize(Vector2);
 
 	vector<NPC*> NPCs;
 	array<int, 4> party;

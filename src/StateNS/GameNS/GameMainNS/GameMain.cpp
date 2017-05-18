@@ -32,6 +32,7 @@ void GameMain::initialize()
 	mPause = 0; 
 	toClear = false;
 	partyChanged = false;
+	loadFlag = false;
 }
 
 void GameMain::update(GameParent* _parent)
@@ -52,7 +53,9 @@ void GameMain::update(GameParent* _parent)
 			//Fieldに戻る時点でパーティ変更
 			SAFE_DELETE(mPause);
 			if(partyChanged)mChild->loadParty();
+			if (loadFlag)mChild->loadData();
 			partyChanged = false;
+			loadFlag = false;
 		} 
 	}
 	else
@@ -94,6 +97,11 @@ void GameMain::toPause()
 void GameMain::changeParty()
 {
 	partyChanged = true;
+}
+
+void GameMain::changeLoadFlag()
+{
+	loadFlag = true;
 }
 
 void GameMain::forceEncount(int _monsterID)

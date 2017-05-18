@@ -40,13 +40,6 @@ Child* Play::update(Parent* _parent)
 		else next = changeSequence();
 	}
 
-	if (Input_C())
-	{
-		SAFE_DELETE(gameMain);
-		next = new Clear();
-	}
-
-
 	return next;
 }
 

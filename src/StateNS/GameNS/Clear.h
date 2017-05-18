@@ -17,7 +17,13 @@ public:
 	void initialize();
 	Child* update(StateNS::Parent*);
 	void draw() const;
-
+private:
+	int mTime;
+	int mBackImg;
+	int mClearImg;
+	int mThankImg;
+	int mToTitleImg;
+	bool toTitle;
 };
 
 

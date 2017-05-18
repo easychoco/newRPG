@@ -7,9 +7,9 @@
 namespace StateNS{
 
 
-
 Title::Title()
 {
+	InitGraph();
 	initialize();
 }
 

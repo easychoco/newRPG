@@ -9,7 +9,7 @@ namespace GameNS {
 
 Clear::Clear()
 {
-
+	initialize();
 }
 
 Clear::~Clear()
@@ -19,29 +19,28 @@ Clear::~Clear()
 
 void Clear::initialize()
 {
-
+	mTime = 0;
+	mBackImg = LoadGraph("Data/Image/ResultBack.png");
+	mClearImg = LoadGraph("Data/Image/clear.png");
+	mThankImg = LoadGraph("Data/Image/thankyou.png");
+	mToTitleImg = LoadGraph("Data/Image/totitle.png");
+	toTitle = false;
 }
 
 Child* Clear::update(StateNS::Parent* _parent)
 {
 	Child* next = this;
 
-	/*
-	最初なんかウワーってくる
-	"Game Clear"
-	時限式で会話をする
-	
-	会話が終わったら
-	"Thank you for Playing"
-	"Xキーでタイトルへ"
+	mTime+=2;
 
+	if (Input_Z())
+	{
+		mTime = 600;
+	}
 
-	ロード時に位置変更
-	*/
+	toTitle = mTime > 600;
 
-	
-
-	if (Input_V())
+	if (toTitle && Input_X())
 	{
 		_parent->moveTo(_parent->NextSequence::SEQ_TITLE);
 	}
@@ -51,7 +50,14 @@ Child* Clear::update(StateNS::Parent* _parent)
 
 void Clear::draw() const
 {
-	DrawFormatString(0, 0, MyData::WHITE, "Clear");
+	DrawGraph(0, 0, mBackImg, true);
+	DrawGraph(157, max(480 - mTime, 50), mClearImg, true);
+	DrawGraph(148, max(700 - mTime, 150), mThankImg, true);
+
+	if (toTitle)
+	{
+		DrawGraph(270, 425, mToTitleImg, true);
+	}
 }
 
 

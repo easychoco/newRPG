@@ -56,7 +56,7 @@ void Pause::draw() const
 //==============================================
 
 //ファイルからパーティ情報を読み込み
-void Pause::PauseChild::setParty()
+bool Pause::PauseChild::setParty()
 {
 	std::ifstream fin("Data/Text/PlayerData.txt");
 
@@ -71,6 +71,7 @@ void Pause::PauseChild::setParty()
 	{
 		fin >> c.ID >> c.name >> c.exp;
 	}
+	return party[0].exp != 0;
 }
 
 void Pause::PauseChild::playCancelSound() const
@@ -86,7 +87,8 @@ Pause::Home::Home()
 {
 	mCursorPos = 0;
 	isFin = false;
-	initialized = false;
+	initialized = false; 
+	prePush = true;
 }
 
 Pause::Home::~Home()
@@ -330,7 +332,6 @@ bool Pause::PartyChange::finPause() const
 {
 	return false;
 }
-
 
 //====================================================================
 //内部private関数
@@ -611,7 +612,7 @@ Pause::PauseChild* Pause::Load::update(GameMain* _gameMain)
 	WaitTimer(300);
 	WaitKey();
 
-	setParty();
+	if(setParty())_gameMain->changeLoadFlag();
 	_gameMain->changeParty();
 	prePush = true;
 	return new Home();

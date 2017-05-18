@@ -29,6 +29,7 @@ public:
 	void toConverse(char* fileName);
 	void toPause();
 	void changeParty();
+	void changeLoadFlag();
 	void forceEncount(int monsterID);
 	void moveToClear();
 	
@@ -46,6 +47,7 @@ private:
 
 	bool toClear;
 	bool partyChanged;
+	bool loadFlag;
 
 };
 

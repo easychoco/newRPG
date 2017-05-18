@@ -34,7 +34,7 @@ private:
 		virtual PauseChild* update(GameMain*) = 0;
 		virtual void draw() const = 0;
 		virtual bool finPause() const = 0;
-		void setParty();//ファイルからパーティ情報を読み込み
+		bool setParty();//ファイルからパーティ情報を読み込み
 	protected:
 		void playCancelSound() const;
 		struct Chara { int ID; string name; int exp; };

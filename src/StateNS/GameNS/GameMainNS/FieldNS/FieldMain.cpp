@@ -24,10 +24,17 @@ bool Main::isTalkWithSymbol = false;
 
 Main::Main(Vector2 _player)
 {
+	//2T–ÚˆÈ~‚Ì‚½‚ß‚É
+	isTalkWithSymbol = false;
+	nextMonster = min(nextMonster, 4);
+
 	initialize(_player);
 
 	//‰Žè‚Í‰¤—l‚Æ‰ï˜b
-	NPCs[5]->talk( &Vector2(80000, 888000) );
+	if (NPCs.size() > 5)
+	{
+		NPCs[5]->talk(&Vector2(80000, 888000));
+	}
 }
 
 Main::Main(Vector2 _player, bool isEscape)
@@ -52,6 +59,11 @@ Main::~Main()
 	DeleteSoundMem(mBGM);
 }
 
+void Main::initialize()
+{
+	initialize(Vector2(0, 0));
+}
+
 void Main::initialize(Vector2 _player)
 {
 	mStage = new Stage();
@@ -71,6 +83,7 @@ void Main::initialize(Vector2 _player)
 	NPCs.push_back(new Ally(  64000, 888000, "Data/Image/Character/king.png", "0"));
 
 	//BGMÄ¶
+	StopSoundMem(mBGM);
 	mBGM = LoadSoundMem("Data/Sound/field1.mp3");
 	PlaySoundMem(mBGM, DX_PLAYTYPE_LOOP);
 
@@ -129,7 +142,7 @@ Child* Main::update(GameMain* _parent)
 	}
 
 	//ƒNƒŠƒA‰æ–Ê‚Ö
-	if (nextMonster >= toMonster.size())
+	if (nextMonster >= (int)toMonster.size())
 	{
 		_parent->moveToClear();
 	}
